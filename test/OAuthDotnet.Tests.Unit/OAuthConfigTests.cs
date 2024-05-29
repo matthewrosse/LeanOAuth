@@ -9,19 +9,42 @@ public class OAuthConfigTests
     [Fact]
     public void CreateShouldCreateConfigWhenAllParametersAreValid()
     {
-        var createAction =
-            () => OAuthConfig.Create(
-                "consumerKey",
-                "consumerSecret",
-                OAuthSignatureMethod.HmacSha1,
-                _validTestUri,
-                _validTestUri,
-                _validTestUri
-            );
+        var config = OAuthConfig.Create(
+            "consumerKey",
+            "consumerSecret",
+            OAuthSignatureMethod.HmacSha1,
+            _validTestUri,
+            _validTestUri,
+            _validTestUri
+        );
 
-        createAction
+        config
             .Should()
-            .NotThrow("given valid parameters, a new instance should be created");
+            .NotBeNull("given valid parameters, a new instance should be created");
+
+        config
+            .ConsumerKey
+            .Should()
+            .Be("consumerKey");
+
+        config
+            .ConsumerSecret
+            .Should()
+            .Be("consumerSecret");
+
+        config
+            .SignatureMethod
+            .Should()
+            .Be(OAuthSignatureMethod.HmacSha1);
+
+        Uri[] urls = [config.RequestTokenUri, config.AccessTokenUri, config.CallbackUri];
+
+        foreach (var url in urls)
+        {
+            url
+                .Should()
+                .Be(_validTestUri);
+        }
     }
 
     [Fact]
