@@ -7,7 +7,7 @@ public class OAuthConfigTests
     private readonly Uri _validTestUri = new("https://example.com");
 
     [Fact]
-    public void GivenValidConsumerKeyAndConsumerSecretReturnsNewInstance()
+    public void CreateShouldCreateConfigWhenAllParametersAreValid()
     {
         var createAction =
             () => OAuthConfig.Create(
@@ -25,7 +25,7 @@ public class OAuthConfigTests
     }
 
     [Fact]
-    public void GivenNullConsumerKeyOrConsumerSecretThrowsArgumentNullException()
+    public void CreateShouldThrowArgumentNullExceptionWhenConsumerKeyOrConsumerSecretAreNull()
     {
         var createWithNullKey =
             () => OAuthConfig.Create(
@@ -57,7 +57,7 @@ public class OAuthConfigTests
     }
 
     [Fact]
-    public void GivenEmptyConsumerKeyOrConsumerSecretThrowsArgumentException()
+    public void CreateShouldThrowArgumentExceptionWhenConsumerKeyOrConsumerSecretAreEmpty()
     {
         var createWithEmptyKey =
             () => OAuthConfig.Create(
@@ -89,7 +89,7 @@ public class OAuthConfigTests
     }
 
     [Fact]
-    public void GivenWhitespaceConsumerKeyOrConsumerSecretThrowsArgumentException()
+    public void CreateShouldThrowArgumentExceptionWhenConsumerKeyOrConsumerSecretAreWhitespace()
     {
         var createWithWhitespaceKey =
             () => OAuthConfig.Create(
@@ -121,7 +121,7 @@ public class OAuthConfigTests
     }
 
     [Fact]
-    public void GivenNullSignatureMethodThrowsArgumentNullException()
+    public void CreateShouldThrowArgumentNullExceptionWhenSignatureMethodIsNull()
     {
         var createWithNullSignatureMethod = () => OAuthConfig.Create(
             "consumerKey",
