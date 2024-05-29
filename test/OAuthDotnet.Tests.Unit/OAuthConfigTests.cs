@@ -120,6 +120,7 @@ public class OAuthConfigTests
             .ThrowExactly<ArgumentException>("consumer secret should not be whitespace");
     }
 
+    [Fact]
     public void GivenNullSignatureMethodThrowsArgumentNullException()
     {
         var createWithNullSignatureMethod = () => OAuthConfig.Create(
