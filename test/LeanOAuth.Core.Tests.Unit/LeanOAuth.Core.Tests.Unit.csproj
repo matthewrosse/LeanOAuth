@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\OAuthDotnet\OAuthDotnet.csproj" />
+    <ProjectReference Include="..\..\src\LeanOAuth.Core\LeanOAuth.Core.csproj" />
   </ItemGroup>
 
 </Project>

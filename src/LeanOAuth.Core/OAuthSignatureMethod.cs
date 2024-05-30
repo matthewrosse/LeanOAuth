@@ -1,4 +1,4 @@
-namespace OAuthDotnet;
+namespace LeanOAuth.Core;
 
 public class OAuthSignatureMethod : Enumeration<OAuthSignatureMethod>
 {

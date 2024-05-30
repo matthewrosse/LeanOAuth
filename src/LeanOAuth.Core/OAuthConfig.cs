@@ -1,4 +1,4 @@
-namespace OAuthDotnet;
+namespace LeanOAuth.Core;
 
 /// <summary>
 /// Represents OAuthConfig data.

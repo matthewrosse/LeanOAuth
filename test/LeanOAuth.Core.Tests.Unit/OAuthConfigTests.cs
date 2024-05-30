@@ -1,6 +1,6 @@
 using FluentAssertions;
 
-namespace OAuthDotnet.Tests.Unit;
+namespace LeanOAuth.Core.Tests.Unit;
 
 public class OAuthConfigTests
 {

@@ -5,11 +5,11 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{2AF7591E-DAB0-4AEE-A7F9-320B30E93C67}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OAuthDotnet", "src\OAuthDotnet\OAuthDotnet.csproj", "{FA0B281F-DAE2-432C-B593-84007BA5755C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LeanOAuth.Core", "src\LeanOAuth.Core\LeanOAuth.Core.csproj", "{FA0B281F-DAE2-432C-B593-84007BA5755C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{CB0B68DB-9C5D-4603-B224-4BE20EA85023}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OAuthDotnet.Tests.Unit", "test\OAuthDotnet.Tests.Unit\OAuthDotnet.Tests.Unit.csproj", "{6FFA652A-F20C-42C0-9F2D-577F498E6254}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LeanOAuth.Core.Tests.Unit", "test\LeanOAuth.Core.Tests.Unit\LeanOAuth.Core.Tests.Unit.csproj", "{6FFA652A-F20C-42C0-9F2D-577F498E6254}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
