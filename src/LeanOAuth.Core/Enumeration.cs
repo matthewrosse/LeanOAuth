@@ -15,13 +15,10 @@ public abstract class Enumeration<TEnum> : IEquatable<Enumeration<TEnum>>
         Name = name;
     }
 
-    public static TEnum? FromValue(int value)
-        => Enumerations.GetValueOrDefault(value);
+    public static TEnum? FromValue(int value) => Enumerations.GetValueOrDefault(value);
 
-    public static TEnum? FromName(string name)
-        => Enumerations
-            .Values
-            .SingleOrDefault(e => e.Name == name);
+    public static TEnum? FromName(string name) =>
+        Enumerations.Values.SingleOrDefault(e => e.Name == name);
 
     public bool Equals(Enumeration<TEnum>? other)
     {
@@ -30,33 +27,23 @@ public abstract class Enumeration<TEnum> : IEquatable<Enumeration<TEnum>>
             return false;
         }
 
-        return GetType() == other.GetType() &&
-               Value == other.Value;
+        return GetType() == other.GetType() && Value == other.Value;
     }
 
-    public override bool Equals(object? obj)
-        => obj is Enumeration<TEnum> other &&
-           Equals(other);
+    public override bool Equals(object? obj) => obj is Enumeration<TEnum> other && Equals(other);
 
-    public override int GetHashCode()
-        => Value.GetHashCode();
+    public override int GetHashCode() => Value.GetHashCode();
 
-    public override string ToString()
-        => Name;
+    public override string ToString() => Name;
 
     private static Dictionary<int, TEnum> CreateEnumerations()
     {
         var enumerationType = typeof(TEnum);
 
         var fieldForType = enumerationType
-            .GetFields(
-                BindingFlags.Public |
-                BindingFlags.Static |
-                BindingFlags.FlattenHierarchy)
-            .Where(fieldInfo =>
-                enumerationType.IsAssignableFrom(fieldInfo.FieldType))
-            .Select(fieldInfo =>
-                (TEnum)fieldInfo.GetValue(default)!);
+            .GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)
+            .Where(fieldInfo => enumerationType.IsAssignableFrom(fieldInfo.FieldType))
+            .Select(fieldInfo => (TEnum)fieldInfo.GetValue(default)!);
 
         return fieldForType.ToDictionary(x => x.Value);
     }

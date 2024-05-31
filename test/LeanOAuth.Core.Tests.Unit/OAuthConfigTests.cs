@@ -19,47 +19,29 @@ public class OAuthConfigTests
             "realm"
         );
 
-        config
-            .Should()
-            .NotBeNull("given valid parameters, a new instance should be created");
+        config.Should().NotBeNull("given valid parameters, a new instance should be created");
 
-        config
-            .ConsumerKey
-            .Should()
-            .Be("consumerKey");
+        config.ConsumerKey.Should().Be("consumerKey");
 
-        config
-            .ConsumerSecret
-            .Should()
-            .Be("consumerSecret");
+        config.ConsumerSecret.Should().Be("consumerSecret");
 
-        config
-            .SignatureMethod
-            .Should()
-            .Be(OAuthSignatureMethod.HmacSha1);
+        config.SignatureMethod.Should().Be(OAuthSignatureMethod.HmacSha1);
 
         Uri[] urls = [config.RequestTokenUrl, config.AccessTokenUrl, config.CallbackUrl];
 
         foreach (var url in urls)
         {
-            url
-                .Should()
-                .Be(_validTestUri);
+            url.Should().Be(_validTestUri);
         }
 
-        config
-            .Realm
-            .Should()
-            .NotBeNull()
-            .And
-            .Be("realm");
+        config.Realm.Should().NotBeNull().And.Be("realm");
     }
 
     [Fact]
     public void CreateShouldThrowArgumentNullExceptionWhenConsumerKeyOrConsumerSecretAreNull()
     {
-        var createWithNullKey =
-            () => OAuthConfig.Create(
+        var createWithNullKey = () =>
+            OAuthConfig.Create(
                 null!,
                 "consumerSecret",
                 OAuthSignatureMethod.HmacSha1,
@@ -68,8 +50,8 @@ public class OAuthConfigTests
                 _validTestUri
             );
 
-        var createWithNullSecret =
-            () => OAuthConfig.Create(
+        var createWithNullSecret = () =>
+            OAuthConfig.Create(
                 "consumerKey",
                 null!,
                 OAuthSignatureMethod.HmacSha1,
@@ -90,8 +72,8 @@ public class OAuthConfigTests
     [Fact]
     public void CreateShouldThrowArgumentExceptionWhenConsumerKeyOrConsumerSecretAreEmpty()
     {
-        var createWithEmptyKey =
-            () => OAuthConfig.Create(
+        var createWithEmptyKey = () =>
+            OAuthConfig.Create(
                 string.Empty,
                 "consumerSecret",
                 OAuthSignatureMethod.HmacSha1,
@@ -100,8 +82,8 @@ public class OAuthConfigTests
                 _validTestUri
             );
 
-        var createWithEmptySecret =
-            () => OAuthConfig.Create(
+        var createWithEmptySecret = () =>
+            OAuthConfig.Create(
                 "consumerKey",
                 string.Empty,
                 OAuthSignatureMethod.HmacSha1,
@@ -122,8 +104,8 @@ public class OAuthConfigTests
     [Fact]
     public void CreateShouldThrowArgumentExceptionWhenConsumerKeyOrConsumerSecretAreWhitespace()
     {
-        var createWithWhitespaceKey =
-            () => OAuthConfig.Create(
+        var createWithWhitespaceKey = () =>
+            OAuthConfig.Create(
                 "    ",
                 "consumerSecret",
                 OAuthSignatureMethod.HmacSha1,
@@ -132,8 +114,8 @@ public class OAuthConfigTests
                 _validTestUri
             );
 
-        var createWithWhitespaceSecret =
-            () => OAuthConfig.Create(
+        var createWithWhitespaceSecret = () =>
+            OAuthConfig.Create(
                 "consumerKey",
                 "    ",
                 OAuthSignatureMethod.HmacSha1,
@@ -154,14 +136,15 @@ public class OAuthConfigTests
     [Fact]
     public void CreateShouldThrowArgumentNullExceptionWhenSignatureMethodIsNull()
     {
-        var createWithNullSignatureMethod = () => OAuthConfig.Create(
-            "consumerKey",
-            "consumerSecret",
-            null!,
-            _validTestUri,
-            _validTestUri,
-            _validTestUri
-        );
+        var createWithNullSignatureMethod = () =>
+            OAuthConfig.Create(
+                "consumerKey",
+                "consumerSecret",
+                null!,
+                _validTestUri,
+                _validTestUri,
+                _validTestUri
+            );
 
         createWithNullSignatureMethod
             .Should()
