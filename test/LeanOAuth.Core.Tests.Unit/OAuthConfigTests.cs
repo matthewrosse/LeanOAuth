@@ -15,7 +15,8 @@ public class OAuthConfigTests
             OAuthSignatureMethod.HmacSha1,
             _validTestUri,
             _validTestUri,
-            _validTestUri
+            _validTestUri,
+            "realm"
         );
 
         config
@@ -37,7 +38,7 @@ public class OAuthConfigTests
             .Should()
             .Be(OAuthSignatureMethod.HmacSha1);
 
-        Uri[] urls = [config.RequestTokenUri, config.AccessTokenUri, config.CallbackUri];
+        Uri[] urls = [config.RequestTokenUrl, config.AccessTokenUrl, config.CallbackUrl];
 
         foreach (var url in urls)
         {
@@ -45,6 +46,13 @@ public class OAuthConfigTests
                 .Should()
                 .Be(_validTestUri);
         }
+
+        config
+            .Realm
+            .Should()
+            .NotBeNull()
+            .And
+            .Be("realm");
     }
 
     [Fact]

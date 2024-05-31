@@ -8,9 +8,11 @@ public record OAuthConfig
     public string ConsumerKey { get; init; }
     public string ConsumerSecret { get; init; }
     public OAuthSignatureMethod SignatureMethod { get; init; }
-    public Uri RequestTokenUri { get; init; }
-    public Uri AccessTokenUri { get; init; }
-    public Uri CallbackUri { get; init; }
+    public Uri RequestTokenUrl { get; init; }
+    public Uri AccessTokenUrl { get; init; }
+    public Uri CallbackUrl { get; init; }
+    public string? Realm { get; init; }
+    public string Version => "1.0";
 
     /// <summary>
     /// Creates a new <see cref="OAuthConfig"/> instance.
@@ -21,6 +23,7 @@ public record OAuthConfig
     /// <param name="requestTokenUri">Request token uri</param>
     /// <param name="accessTokenUri">AccessTokenUri</param>
     /// <param name="callbackUri">CallbackUri</param>
+    /// <param name="realm">Realm</param>
     /// <exception cref="ArgumentNullException">When either a <see cref="ConsumerKey"/> or a <see cref="ConsumerSecret"/> are null.</exception>
     /// <exception cref="ArgumentException">When either a <see cref="ConsumerKey"/> or a <see cref="ConsumerSecret"/> are empty or whitespace.</exception>
     /// <returns>A new <see cref="OAuthConfig"/> instance.</returns>
@@ -30,7 +33,8 @@ public record OAuthConfig
         OAuthSignatureMethod signatureMethod,
         Uri requestTokenUri,
         Uri accessTokenUri,
-        Uri callbackUri
+        Uri callbackUri,
+        string? realm = null
     )
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(consumerKey);
@@ -43,7 +47,8 @@ public record OAuthConfig
             signatureMethod,
             requestTokenUri,
             accessTokenUri,
-            callbackUri
+            callbackUri,
+            realm
         );
     }
 
@@ -51,16 +56,18 @@ public record OAuthConfig
         string consumerKey,
         string consumerSecret,
         OAuthSignatureMethod signatureMethod,
-        Uri requestTokenUri,
-        Uri accessTokenUri,
-        Uri callbackUri
+        Uri requestTokenUrl,
+        Uri accessTokenUrl,
+        Uri callbackUrl,
+        string? realm
     )
     {
         ConsumerKey = consumerKey;
         ConsumerSecret = consumerSecret;
         SignatureMethod = signatureMethod;
-        RequestTokenUri = requestTokenUri;
-        AccessTokenUri = accessTokenUri;
-        CallbackUri = callbackUri;
+        RequestTokenUrl = requestTokenUrl;
+        AccessTokenUrl = accessTokenUrl;
+        CallbackUrl = callbackUrl;
+        Realm = realm;
     }
 }
