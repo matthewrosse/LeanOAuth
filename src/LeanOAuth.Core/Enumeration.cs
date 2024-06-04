@@ -32,6 +32,12 @@ public abstract class Enumeration<TEnum> : IEquatable<Enumeration<TEnum>>
 
     public override bool Equals(object? obj) => obj is Enumeration<TEnum> other && Equals(other);
 
+    public static bool operator ==(Enumeration<TEnum> left, Enumeration<TEnum> right) =>
+        left.Equals(right);
+
+    public static bool operator !=(Enumeration<TEnum> left, Enumeration<TEnum> right) =>
+        !left.Equals(right);
+
     public override int GetHashCode() => Value.GetHashCode();
 
     public override string ToString() => Name;
