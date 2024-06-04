@@ -1,4 +1,6 @@
-namespace LeanOAuth.Core;
+using LeanOAuth.Core.Requests.Common;
+
+namespace LeanOAuth.Core.Requests;
 
 public abstract class OAuthRequest
 {

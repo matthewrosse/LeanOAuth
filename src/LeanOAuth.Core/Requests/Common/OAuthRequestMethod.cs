@@ -1,4 +1,6 @@
-namespace LeanOAuth.Core;
+using LeanOAuth.Core.Common;
+
+namespace LeanOAuth.Core.Requests.Common;
 
 public sealed class OAuthRequestMethod : Enumeration<OAuthRequestMethod>
 {
