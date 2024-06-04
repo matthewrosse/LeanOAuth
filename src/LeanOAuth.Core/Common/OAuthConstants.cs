@@ -4,7 +4,7 @@ public static class OAuthConstants
 {
     public const string AuthorizationHeader = "Authorization";
 
-    public static class Parameters
+    public static class ParameterNames
     {
         public const string ConsumerKey = "oauth_consumer_key";
         public const string Nonce = "oauth_nonce";
@@ -16,5 +16,15 @@ public static class OAuthConstants
         public const string Token = "oauth_token";
         public const string TokenSecret = "oauth_token_secret";
         public const string Verifier = "oauth_verifier";
+    }
+
+    public static class Responses
+    {
+        public static class UnauthorizedRequestToken
+        {
+            public const string Token = "oauth_token";
+            public const string TokenSecret = "oauth_token_secret";
+            public const string CallbackConfirmed = "oauth_callback_confirmed";
+        }
     }
 }
