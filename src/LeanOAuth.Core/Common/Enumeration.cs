@@ -1,6 +1,6 @@
 using System.Reflection;
 
-namespace LeanOAuth.Core;
+namespace LeanOAuth.Core.Common;
 
 public abstract class Enumeration<TEnum> : IEquatable<Enumeration<TEnum>>
     where TEnum : Enumeration<TEnum>
