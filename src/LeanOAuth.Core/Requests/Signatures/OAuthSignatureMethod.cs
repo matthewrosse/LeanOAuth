@@ -1,6 +1,6 @@
 using LeanOAuth.Core.Common;
 
-namespace LeanOAuth.Core.Requests.Common;
+namespace LeanOAuth.Core.Requests.Signatures;
 
 public class OAuthSignatureMethod : Enumeration<OAuthSignatureMethod>
 {

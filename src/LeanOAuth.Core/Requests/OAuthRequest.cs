@@ -1,4 +1,5 @@
 using LeanOAuth.Core.Requests.Common;
+using LeanOAuth.Core.Requests.Signatures;
 
 namespace LeanOAuth.Core.Requests;
 
