@@ -28,4 +28,10 @@ public static class OAuthConstants
             public const string CallbackConfirmed = "oauth_callback_confirmed";
         }
     }
+
+    public static class SignatureMethods
+    {
+        public const string HmacSha1 = "HMAC-SHA1";
+        public const string PlainText = "PLAINTEXT";
+    }
 }
