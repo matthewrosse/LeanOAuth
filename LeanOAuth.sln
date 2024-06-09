@@ -11,6 +11,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{CB0B68DB-9
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LeanOAuth.Core.Tests.Unit", "test\LeanOAuth.Core.Tests.Unit\LeanOAuth.Core.Tests.Unit.csproj", "{6FFA652A-F20C-42C0-9F2D-577F498E6254}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LeanOAuth.AspNetCore.Examples", "src\LeanOAuth.AspNetCore.Examples\LeanOAuth.AspNetCore.Examples.csproj", "{E0E76264-4E76-4808-AD44-C506A07F7E5D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LeanOAuth.AspNetCore", "src\LeanOAuth.AspNetCore\LeanOAuth.AspNetCore.csproj", "{5AFEC8DD-408A-4DFB-BE18-5E2B1F01EFC0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -28,9 +32,18 @@ Global
 		{6FFA652A-F20C-42C0-9F2D-577F498E6254}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6FFA652A-F20C-42C0-9F2D-577F498E6254}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6FFA652A-F20C-42C0-9F2D-577F498E6254}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E0E76264-4E76-4808-AD44-C506A07F7E5D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E0E76264-4E76-4808-AD44-C506A07F7E5D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E0E76264-4E76-4808-AD44-C506A07F7E5D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E0E76264-4E76-4808-AD44-C506A07F7E5D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5AFEC8DD-408A-4DFB-BE18-5E2B1F01EFC0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5AFEC8DD-408A-4DFB-BE18-5E2B1F01EFC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5AFEC8DD-408A-4DFB-BE18-5E2B1F01EFC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5AFEC8DD-408A-4DFB-BE18-5E2B1F01EFC0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{FA0B281F-DAE2-432C-B593-84007BA5755C} = {2AF7591E-DAB0-4AEE-A7F9-320B30E93C67}
 		{6FFA652A-F20C-42C0-9F2D-577F498E6254} = {CB0B68DB-9C5D-4603-B224-4BE20EA85023}
+		{5AFEC8DD-408A-4DFB-BE18-5E2B1F01EFC0} = {2AF7591E-DAB0-4AEE-A7F9-320B30E93C67}
 	EndGlobalSection
 EndGlobal
