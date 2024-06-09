@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LeanOAuth.AspNetCore.Exampl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LeanOAuth.AspNetCore", "src\LeanOAuth.AspNetCore\LeanOAuth.AspNetCore.csproj", "{5AFEC8DD-408A-4DFB-BE18-5E2B1F01EFC0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LeanOAuth.AspNetCore.DependencyInjection", "src\LeanOAuth.AspNetCore.DependencyInjection\LeanOAuth.AspNetCore.DependencyInjection.csproj", "{9A530111-1FBF-49BA-91D6-5A754FADA543}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -40,10 +42,15 @@ Global
 		{5AFEC8DD-408A-4DFB-BE18-5E2B1F01EFC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5AFEC8DD-408A-4DFB-BE18-5E2B1F01EFC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5AFEC8DD-408A-4DFB-BE18-5E2B1F01EFC0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9A530111-1FBF-49BA-91D6-5A754FADA543}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9A530111-1FBF-49BA-91D6-5A754FADA543}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9A530111-1FBF-49BA-91D6-5A754FADA543}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9A530111-1FBF-49BA-91D6-5A754FADA543}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{FA0B281F-DAE2-432C-B593-84007BA5755C} = {2AF7591E-DAB0-4AEE-A7F9-320B30E93C67}
 		{6FFA652A-F20C-42C0-9F2D-577F498E6254} = {CB0B68DB-9C5D-4603-B224-4BE20EA85023}
 		{5AFEC8DD-408A-4DFB-BE18-5E2B1F01EFC0} = {2AF7591E-DAB0-4AEE-A7F9-320B30E93C67}
+		{9A530111-1FBF-49BA-91D6-5A754FADA543} = {2AF7591E-DAB0-4AEE-A7F9-320B30E93C67}
 	EndGlobalSection
 EndGlobal
