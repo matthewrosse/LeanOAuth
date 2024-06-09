@@ -1,3 +1,4 @@
+using System.Net.Http.Headers;
 using FluentAssertions;
 using LeanOAuth.Core.Abstractions;
 using LeanOAuth.Core.Common;
@@ -57,15 +58,20 @@ public class OAuthHeaderFactoryTests
             nonceGenerator
         );
 
-        var header = sut.CreateRequestTokenHeader(
+        var headerValue = sut.CreateRequestTokenHeader(
             HttpMethod.Post,
             new Dictionary<string, string>()
         );
 
+        var header = new AuthenticationHeaderValue(
+            OAuthConstants.AuthorizationHeaderScheme,
+            headerValue
+        );
+
         // TODO: Maybe think about returning some object from the method and override .ToString(), so the testing is easier.
         var expected =
-            @"Authorization: OAuth realm=""http://photos.example.net/"",oauth_consumer_key=""dpf43f3p2l4k3l03"",oauth_nonce=""kllo9940pd9333jh"",oauth_timestamp=""1191242090"",oauth_signature_method=""HMAC-SHA1"",oauth_version=""1.0"",oauth_callback=""http%3A%2F%2Fprinter.example.com%2Frequest_token_ready"",oauth_signature=""tR3%252BTy81lMeYAr%252FFid0kMTYa%252FWM%253D""";
+            @"OAuth realm=""http://photos.example.net/"",oauth_consumer_key=""dpf43f3p2l4k3l03"",oauth_nonce=""kllo9940pd9333jh"",oauth_timestamp=""1191242090"",oauth_signature_method=""HMAC-SHA1"",oauth_version=""1.0"",oauth_callback=""http%3A%2F%2Fprinter.example.com%2Frequest_token_ready"",oauth_signature=""tR3%252BTy81lMeYAr%252FFid0kMTYa%252FWM%253D""";
 
-        header.Should().Be(expected);
+        header.ToString().Should().Be(expected);
     }
 }

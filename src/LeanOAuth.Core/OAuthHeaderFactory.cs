@@ -56,10 +56,7 @@ public sealed class OAuthHeaderFactory<TOAuthOptions>(
 
         var sb = new StringBuilder();
 
-        var header = sb.Append(HttpRequestHeader.Authorization.ToString())
-            .Append(':')
-            .Append(' ')
-            .Append($@"OAuth realm=""{options.Realm}""")
+        var header = sb.Append($@"realm=""{options.Realm}""")
             .Append(',')
             .Append(
                 string.Join(

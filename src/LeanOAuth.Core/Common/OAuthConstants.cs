@@ -2,7 +2,7 @@ namespace LeanOAuth.Core.Common;
 
 public static class OAuthConstants
 {
-    public const string AuthorizationHeader = "Authorization";
+    public const string AuthorizationHeaderScheme = "OAuth";
     public const string Version = "1.0";
 
     public static class ParameterNames
