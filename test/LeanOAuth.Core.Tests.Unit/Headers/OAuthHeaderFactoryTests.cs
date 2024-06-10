@@ -14,9 +14,14 @@ public record TestOAuthOptions(
     Uri RequestTokenEndpoint,
     Uri AuthorizationEndpoint,
     Uri AccessTokenEndpoint,
-    Uri CallbackEndpoint,
-    string Realm
-) : IOAuthOptions;
+    string Realm,
+    string ScopeParameterName,
+    char ScopeParameterSeparator,
+    ICollection<string>? Scopes = default
+) : IOAuthOptions
+{
+    public ICollection<string> Scopes { get; } = Scopes ?? new List<string>();
+}
 
 // TODO: Look for some reliable test data.
 public class OAuthHeaderFactoryTests
@@ -30,9 +35,12 @@ public class OAuthHeaderFactoryTests
             new Uri("https://photos.example.net/request_token"),
             new Uri("http://photos.example.net/authorize"),
             new Uri("https://photos.example.net/access_token"),
-            new Uri("http://printer.example.com/request_token_ready"),
-            "http://photos.example.net/"
+            "http://photos.example.net/",
+            "scopes",
+            '|'
         );
+
+        var callbackUrl = new Uri("http://printer.example.com/request_token_ready");
 
         var nonceGenerator = Substitute.For<INonceGenerator>();
 
@@ -58,10 +66,7 @@ public class OAuthHeaderFactoryTests
             nonceGenerator
         );
 
-        var headerValue = sut.CreateRequestTokenHeader(
-            HttpMethod.Post,
-            new Dictionary<string, string>()
-        );
+        var headerValue = sut.CreateRequestTokenHeader(HttpMethod.Post, callbackUrl);
 
         var header = new AuthenticationHeaderValue(
             OAuthConstants.AuthorizationHeaderScheme,

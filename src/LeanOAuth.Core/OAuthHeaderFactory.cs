@@ -108,6 +108,14 @@ public sealed class OAuthHeaderFactory<TOAuthOptions>(
             { OAuthConstants.ParameterNames.Callback, callbackEndpoint.ToString() },
         };
 
+        if (options.Scopes.Count is not 0)
+        {
+            parametersToBeAdded.Add(
+                options.ScopeParameterName,
+                string.Join(options.ScopeParameterSeparator, options.Scopes)
+            );
+        }
+
         var mergedParameters = MergeDictionaries(additionalParameters, parametersToBeAdded);
 
         return BuildHeaderParameters(timestamp, nonce, mergedParameters);
