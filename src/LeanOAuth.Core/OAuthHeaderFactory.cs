@@ -1,5 +1,4 @@
 using System.Diagnostics.Contracts;
-using System.Net;
 using System.Text;
 using LeanOAuth.Core.Abstractions;
 using LeanOAuth.Core.Common;
@@ -16,11 +15,12 @@ public sealed class OAuthHeaderFactory<TOAuthOptions>(
 ) : IOAuthHeaderFactory<TOAuthOptions>
     where TOAuthOptions : IOAuthOptions
 {
-    public string CreateRequestTokenHeader(HttpMethod httpMethod) =>
-        CreateRequestTokenHeader(httpMethod, new Dictionary<string, string>());
+    public string CreateRequestTokenHeader(HttpMethod httpMethod, Uri callbackUrl) =>
+        CreateRequestTokenHeader(httpMethod, callbackUrl, new Dictionary<string, string>());
 
     public string CreateRequestTokenHeader(
         HttpMethod httpMethod,
+        Uri callbackUrl,
         IDictionary<string, string> additionalParameters
     )
     {
@@ -28,7 +28,7 @@ public sealed class OAuthHeaderFactory<TOAuthOptions>(
         var nonce = nonceGenerator.Generate();
 
         var headerParameters = BuildRequestTokenHeaderParameters(
-            options.CallbackEndpoint,
+            callbackUrl,
             timestamp,
             nonce,
             additionalParameters
@@ -105,7 +105,7 @@ public sealed class OAuthHeaderFactory<TOAuthOptions>(
     {
         var parametersToBeAdded = new Dictionary<string, string>
         {
-            { OAuthConstants.ParameterNames.Callback, callbackEndpoint.ToString() }
+            { OAuthConstants.ParameterNames.Callback, callbackEndpoint.ToString() },
         };
 
         var mergedParameters = MergeDictionaries(additionalParameters, parametersToBeAdded);
