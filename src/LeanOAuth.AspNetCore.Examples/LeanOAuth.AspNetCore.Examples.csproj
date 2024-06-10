@@ -7,7 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\LeanOAuth.Core\LeanOAuth.Core.csproj" />
+      <ProjectReference Include="..\LeanOAuth.AspNetCore.DependencyInjection\LeanOAuth.AspNetCore.DependencyInjection.csproj" />
     </ItemGroup>
 
 </Project>
