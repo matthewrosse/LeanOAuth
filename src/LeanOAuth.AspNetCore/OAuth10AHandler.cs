@@ -1,4 +1,5 @@
 using System.Text.Encodings.Web;
+using LeanOAuth.AspNetCore.Exceptions;
 using LeanOAuth.AspNetCore.Options;
 using LeanOAuth.Core;
 using LeanOAuth.Core.Abstractions;
@@ -65,7 +66,12 @@ public class OAuth10AHandler<TOptions>(
 
         var response = await Backchannel.SendAsync(requestMessage);
 
-        response.EnsureSuccessStatusCode();
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new UnauthorizedTemporaryCredentialsRequestException(
+                "The request was not authorized, possible reasons: wrong credentials."
+            );
+        }
 
         var unauthorizedRequestTokenResponse =
             await OAuthResponseHelpers.GetUnauthorizedRequestTokenResponseAsync(response.Content);
