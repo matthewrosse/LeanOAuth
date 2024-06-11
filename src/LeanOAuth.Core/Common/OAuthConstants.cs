@@ -27,6 +27,12 @@ public static class OAuthConstants
             public const string TokenSecret = "oauth_token_secret";
             public const string CallbackConfirmed = "oauth_callback_confirmed";
         }
+
+        public static class AccessToken
+        {
+            public const string Token = "oauth_token";
+            public const string TokenSecret = "oauth_token_secret";
+        }
     }
 
     public static class SignatureMethods
