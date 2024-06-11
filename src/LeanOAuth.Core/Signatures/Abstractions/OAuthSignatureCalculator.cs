@@ -12,7 +12,7 @@ public abstract class OAuthSignatureCalculator
     protected string CalculateSignatureBase(
         HttpMethod httpMethod,
         Uri requestBaseUrl,
-        IDictionary<string, string> requestParameters
+        IList<OAuthParameter> requestParameters
     )
     {
         var sb = new StringBuilder(DefaultSignatureBaseStringBufferCapacity);

@@ -11,7 +11,7 @@ public class OAuthHmacSha1SignatureCalculatorTests
     public void Generate_ShouldReturnValidSignature(
         HttpMethod httpMethod,
         Uri requestBaseUrl,
-        Dictionary<string, string> additionalParameters,
+        IList<OAuthParameter> parameters,
         string consumerSecret,
         string tokenSecret,
         string expected
@@ -23,7 +23,7 @@ public class OAuthHmacSha1SignatureCalculatorTests
         var context = new OAuthSignatureCreationContext(
             httpMethod,
             requestBaseUrl,
-            additionalParameters,
+            parameters,
             consumerSecret,
             tokenSecret
         );
@@ -44,16 +44,16 @@ public class OAuthHmacSha1SignatureCalculatorTests
             {
                 HttpMethod.Get,
                 new Uri("http://photos.example.net/photos"),
-                new Dictionary<string, string>
+                new List<OAuthParameter>
                 {
-                    { OAuthConstants.ParameterNames.ConsumerKey, "dpf43f3p2l4k3l03" },
-                    { OAuthConstants.ParameterNames.Token, "nnch734d00sl2jdk" },
-                    { OAuthConstants.ParameterNames.SignatureMethod, "HMAC-SHA1" },
-                    { OAuthConstants.ParameterNames.Timestamp, "1191242096" },
-                    { OAuthConstants.ParameterNames.Nonce, "kllo9940pd9333jh" },
-                    { OAuthConstants.ParameterNames.Version, "1.0" },
-                    { "file", "vacation.jpg" },
-                    { "size", "original" },
+                    new(OAuthConstants.ParameterNames.ConsumerKey, "dpf43f3p2l4k3l03"),
+                    new(OAuthConstants.ParameterNames.Token, "nnch734d00sl2jdk"),
+                    new(OAuthConstants.ParameterNames.SignatureMethod, "HMAC-SHA1"),
+                    new(OAuthConstants.ParameterNames.Timestamp, "1191242096"),
+                    new(OAuthConstants.ParameterNames.Nonce, "kllo9940pd9333jh"),
+                    new(OAuthConstants.ParameterNames.Version, "1.0"),
+                    new("file", "vacation.jpg"),
+                    new("size", "original")
                 },
                 "kd94hf93k423kf44",
                 "pfkkdhi9sl3r4s00",
@@ -63,22 +63,22 @@ public class OAuthHmacSha1SignatureCalculatorTests
             {
                 HttpMethod.Post,
                 new Uri("https://api.twitter.com/1.1/statuses/update.json"),
-                new Dictionary<string, string>
+                new List<OAuthParameter>
                 {
-                    { OAuthConstants.ParameterNames.ConsumerKey, "xvz1evFS4wEEPTGEFPHBog" },
-                    {
+                    new(OAuthConstants.ParameterNames.ConsumerKey, "xvz1evFS4wEEPTGEFPHBog"),
+                    new(
                         OAuthConstants.ParameterNames.Token,
                         "370773112-GmHxMAgYyLbNEtIKZeRNFsMKPR9EyMZeS9weJAEb"
-                    },
-                    { OAuthConstants.ParameterNames.SignatureMethod, "HMAC-SHA1" },
-                    { OAuthConstants.ParameterNames.Timestamp, "1318622958" },
-                    {
+                    ),
+                    new(OAuthConstants.ParameterNames.SignatureMethod, "HMAC-SHA1"),
+                    new(OAuthConstants.ParameterNames.Timestamp, "1318622958"),
+                    new(
                         OAuthConstants.ParameterNames.Nonce,
                         "kYjzVBB8Y0ZFabxSWbWovY3uYSQ2pTgmZeNu2VS4cg"
-                    },
-                    { OAuthConstants.ParameterNames.Version, "1.0" },
-                    { "status", "Hello Ladies + Gentlemen, a signed OAuth request!" },
-                    { "include_entities", "true" }
+                    ),
+                    new(OAuthConstants.ParameterNames.Version, "1.0"),
+                    new("status", "Hello Ladies + Gentlemen, a signed OAuth request!"),
+                    new("include_entities", "true")
                 },
                 "kAcSOqF21Fu85e7zjz7ZN2U4ZRhfV3WpwPAoE3Z7kBw",
                 "LswwdoUaIvS8ltyTt5jkRh4J50vUPVVHtR2YPi5kE",
@@ -88,16 +88,16 @@ public class OAuthHmacSha1SignatureCalculatorTests
             {
                 HttpMethod.Post,
                 new Uri("http://host.net/resource"),
-                new Dictionary<string, string>
+                new List<OAuthParameter>
                 {
-                    { OAuthConstants.ParameterNames.ConsumerKey, "abcd" },
-                    { OAuthConstants.ParameterNames.Token, "ijkl" },
-                    { OAuthConstants.ParameterNames.SignatureMethod, "HMAC-SHA1" },
-                    { OAuthConstants.ParameterNames.Timestamp, "1462028665" },
-                    { OAuthConstants.ParameterNames.Nonce, "FDRMnsTvyF1" },
-                    { OAuthConstants.ParameterNames.Version, "1.0" },
-                    { "name", "value" },
-                    { "scopes", "email|photo" }
+                    new(OAuthConstants.ParameterNames.ConsumerKey, "abcd"),
+                    new(OAuthConstants.ParameterNames.Token, "ijkl"),
+                    new(OAuthConstants.ParameterNames.SignatureMethod, "HMAC-SHA1"),
+                    new(OAuthConstants.ParameterNames.Timestamp, "1462028665"),
+                    new(OAuthConstants.ParameterNames.Nonce, "FDRMnsTvyF1"),
+                    new(OAuthConstants.ParameterNames.Version, "1.0"),
+                    new("name", "value"),
+                    new("scopes", "email|photo")
                 },
                 "efgh",
                 "mnop",
@@ -107,15 +107,15 @@ public class OAuthHmacSha1SignatureCalculatorTests
             {
                 HttpMethod.Post,
                 new Uri("https://usosapps.umk.pl/services/oauth/access_token"),
-                new Dictionary<string, string>
+                new List<OAuthParameter>
                 {
-                    { OAuthConstants.ParameterNames.ConsumerKey, "daDdqSStndmyYcKSAfKM" },
-                    { OAuthConstants.ParameterNames.Token, "9qG3rByqDzDjkfFT7SxF" },
-                    { OAuthConstants.ParameterNames.SignatureMethod, "HMAC-SHA1" },
-                    { OAuthConstants.ParameterNames.Timestamp, "1718116861" },
-                    { OAuthConstants.ParameterNames.Nonce, "DEKxPdg6I0M" },
-                    { OAuthConstants.ParameterNames.Version, "1.0" },
-                    { OAuthConstants.ParameterNames.Verifier, "40156935" }
+                    new(OAuthConstants.ParameterNames.ConsumerKey, "daDdqSStndmyYcKSAfKM"),
+                    new(OAuthConstants.ParameterNames.Token, "9qG3rByqDzDjkfFT7SxF"),
+                    new(OAuthConstants.ParameterNames.SignatureMethod, "HMAC-SHA1"),
+                    new(OAuthConstants.ParameterNames.Timestamp, "1718116861"),
+                    new(OAuthConstants.ParameterNames.Nonce, "DEKxPdg6I0M"),
+                    new(OAuthConstants.ParameterNames.Version, "1.0"),
+                    new(OAuthConstants.ParameterNames.Verifier, "40156935"),
                 },
                 "JPD3VjzpsU3tznfr75qXmxEQbb4U2A8dwtHGjYDf",
                 "XeGjTC7dYtJAJJqb2XR2yKq9VaE9eJZ3eHz4fTSn",

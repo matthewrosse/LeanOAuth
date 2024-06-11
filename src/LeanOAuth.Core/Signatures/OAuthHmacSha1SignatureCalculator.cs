@@ -21,10 +21,12 @@ public sealed class OAuthHmacSha1SignatureCalculator : OAuthSignatureCalculator
         var signatureBase = CalculateSignatureBase(
             context.HttpMethod,
             context.RequestBaseUrl,
-            context.RequestParameters.ToDictionary(
-                kvp => OAuthTools.UrlEncodeStrict(kvp.Key),
-                kvp => OAuthTools.UrlEncodeRelaxed(kvp.Value)
-            )
+            context
+                .RequestParameters.Select(x => new OAuthParameter(
+                    OAuthTools.UrlEncodeStrict(x.Key),
+                    OAuthTools.UrlEncodeRelaxed(x.Value)
+                ))
+                .ToList()
         );
 
         var signatureBaseBytes = Encoding.UTF8.GetBytes(signatureBase);

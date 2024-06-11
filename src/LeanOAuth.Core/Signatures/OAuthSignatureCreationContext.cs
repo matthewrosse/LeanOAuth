@@ -1,9 +1,11 @@
+using LeanOAuth.Core.Common;
+
 namespace LeanOAuth.Core.Signatures;
 
 public record OAuthSignatureCreationContext(
     HttpMethod HttpMethod,
     Uri RequestBaseUrl,
-    IDictionary<string, string> RequestParameters,
+    IList<OAuthParameter> RequestParameters,
     string ConsumerSecret,
     string TokenSecret
 );

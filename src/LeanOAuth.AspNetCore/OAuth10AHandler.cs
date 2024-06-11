@@ -20,7 +20,7 @@ public class OAuth10AHandler<TOptions>(
     IOptionsMonitor<TOptions> options,
     ILoggerFactory logger,
     UrlEncoder encoder,
-    IOAuthAuthorizationHeaderFactory<TOptions> authorizationHeaderFactory
+    IOAuthAuthorizationParametersFactory authorizationParametersFactory
 ) : RemoteAuthenticationHandler<TOptions>(options, logger, encoder)
     where TOptions : OAuth10AOptions, new()
 {
@@ -160,7 +160,7 @@ public class OAuth10AHandler<TOptions>(
             Scheme,
             Options,
             Backchannel,
-            authorizationHeaderFactory,
+            authorizationParametersFactory,
             accessTokenResponse,
             user.RootElement
         );
@@ -174,11 +174,17 @@ public class OAuth10AHandler<TOptions>(
         OAuth10ATokenExchangeContext context
     )
     {
-        var authorizationHeader = authorizationHeaderFactory.CreateAccessTokenRequestHeader(
-            HttpMethod.Post,
-            context.Token,
-            context.TokenSecret,
-            context.Verifier
+        var accessTokenRequestParameters =
+            authorizationParametersFactory.CreateAccessTokenRequestParameters(
+                HttpMethod.Post,
+                context.Token,
+                context.TokenSecret,
+                context.Verifier
+            );
+
+        var authorizationHeader = OAuthTools.GenerateAuthorizationHeaderValue(
+            accessTokenRequestParameters,
+            Options.Realm
         );
 
         var requestMessage = OAuthRequestHelpers.PreparePostRequestMessage(
@@ -208,16 +214,25 @@ public class OAuth10AHandler<TOptions>(
     {
         var scopes = string.Join(Options.ScopeParameterSeparator, Options.Scopes);
 
-        var authorizationHeaderValue = authorizationHeaderFactory.CreateRequestTokenRequestHeader(
-            HttpMethod.Post,
-            new Uri(callbackUri),
-            new Dictionary<string, string> { { Options.ScopeParameterName, scopes } }
+        var requestTokenRequestParameters =
+            authorizationParametersFactory.CreateRequestTokenRequestParameters(
+                HttpMethod.Post,
+                new Uri(callbackUri),
+                [new OAuthParameter(Options.ScopeParameterName, scopes)]
+            );
+
+        var authorizationHeaderValue = OAuthTools.GenerateAuthorizationHeaderValue(
+            requestTokenRequestParameters,
+            Options.Realm
         );
 
+        var requestQueryString =
+            scopes.Length > 0
+                ? $"?{Options.ScopeParameterName}={OAuthTools.UrlEncodeRelaxed(scopes)}"
+                : string.Empty;
+
         var requestMessage = OAuthRequestHelpers.PreparePostRequestMessage(
-            new Uri(
-                $"{Options.RequestTokenEndpoint.ToString()}?{Options.ScopeParameterName}={Uri.EscapeDataString(scopes)}"
-            ),
+            new Uri($"{Options.RequestTokenEndpoint.ToString()}{requestQueryString}"),
             authorizationHeaderValue
         );
 

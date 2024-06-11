@@ -1,4 +1,5 @@
 using FluentAssertions;
+using LeanOAuth.Core.Common;
 using LeanOAuth.Core.Signatures;
 using NSubstitute;
 
@@ -21,7 +22,7 @@ public class OAuthPlainTextSignatureCalculatorTests
         var context = new OAuthSignatureCreationContext(
             Arg.Any<HttpMethod>(),
             Arg.Any<Uri>(),
-            Arg.Any<Dictionary<string, string>>(),
+            Arg.Any<IList<OAuthParameter>>(),
             consumerSecret,
             tokenSecret
         );
