@@ -1,4 +1,5 @@
 using System.Text;
+using LeanOAuth.Core.Common;
 
 namespace LeanOAuth.Core.Signatures.Abstractions;
 
@@ -15,22 +16,20 @@ public abstract class OAuthSignatureCalculator
     )
     {
         var sb = new StringBuilder(DefaultSignatureBaseStringBufferCapacity);
-        var methodUrlEncoded = Uri.EscapeDataString(httpMethod.Method.ToUpperInvariant());
+        var methodUrlEncoded = OAuthTools.UrlEncodeRelaxed(httpMethod.Method.ToUpperInvariant());
 
         // Need to ensure that user provided the base url anyway...
-        var baseUrlEncoded = Uri.EscapeDataString(requestBaseUrl.GetLeftPart(UriPartial.Path));
+        var baseUrlEncoded = OAuthTools.UrlEncodeRelaxed(
+            requestBaseUrl.GetLeftPart(UriPartial.Path)
+        );
 
         var sortedParameters = requestParameters
-            .ToDictionary(
-                kvp => Uri.EscapeDataString(kvp.Key),
-                kvp => Uri.EscapeDataString(kvp.Value)
-            )
             .OrderBy(kvp => kvp.Key)
             .ThenBy(kvp => kvp.Value)
             .Select(kvp => $"{kvp.Key}={kvp.Value}")
             .ToArray();
 
-        var encodedConcatenatedParameters = Uri.EscapeDataString(
+        var concatenatedParametersEncoded = OAuthTools.UrlEncodeRelaxed(
             string.Join('&', sortedParameters)
         );
 
@@ -38,7 +37,7 @@ public abstract class OAuthSignatureCalculator
             .Append('&')
             .Append(baseUrlEncoded)
             .Append('&')
-            .Append(encodedConcatenatedParameters)
+            .Append(concatenatedParametersEncoded)
             .ToString();
 
         return signature;
