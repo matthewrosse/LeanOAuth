@@ -1,5 +1,8 @@
 namespace LeanOAuth.Core.Common;
 
+/// <summary>
+/// Flexible interface for OAuth1.0A settings.
+/// </summary>
 public interface IOAuthOptions
 {
     string ConsumerKey { get; }

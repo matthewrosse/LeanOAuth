@@ -15,7 +15,15 @@ public class OAuth10AOptions : RemoteAuthenticationOptions, IOAuthOptions
     public Uri UserInformationEndpoint { get; set; } = default!;
     public string Realm { get; set; } = default!;
     public ICollection<string> Scopes { get; } = new List<string>();
+
+    /// <summary>
+    /// Used to set the scope parameter name. Some auth providers use "scope" while others use "scopes"
+    /// </summary>
     public string ScopeParameterName { get; set; } = default!;
+
+    /// <summary>
+    /// Used to set the scope parameters separator, e.g. , or | or +
+    /// </summary>
     public char ScopeParameterSeparator { get; set; }
 
     public ClaimActionCollection ClaimActions { get; } = [];

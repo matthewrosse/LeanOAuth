@@ -4,6 +4,9 @@ using System.Text;
 
 namespace LeanOAuth.Core.Common;
 
+/// <summary>
+/// A utility class for OAuth1.0A related tasks.
+/// </summary>
 public static class OAuthTools
 {
     private const string AlphaNumeric = Upper + Lower + Digit;
@@ -70,7 +73,13 @@ public static class OAuthTools
         IList<OAuthParameter> parameters
     ) => new(parameters.Select(p => new KeyValuePair<string, string>(p.Key, p.Value)));
 
-    public static string GenerateQueryParametersValue(IList<OAuthParameter> parameters) =>
+    /// <summary>
+    /// Generates query string parameters value from an intermediate <see cref="IList{T}"/> of <see cref="OAuthParameter"/>./>
+    /// <see cref="OAuthParameter"/>./>
+    /// </summary>
+    /// <param name="parameters">A list of <see cref="OAuthParameter"/>.</param>
+    /// <returns>Query string sorted by the key.</returns>
+    public static string GenerateQueryStringParametersValue(IList<OAuthParameter> parameters) =>
         string.Join(
             '&',
             parameters
@@ -82,6 +91,12 @@ public static class OAuthTools
                 .Select(x => $"{x.Key}={x.Value}")
         );
 
+    /// <summary>
+    /// Generates <see cref="AuthenticationHeaderValue"/> from an intermediate <see cref="IList{T}"/> of <see cref="OAuthParameter"/>.
+    /// </summary>
+    /// <param name="parameters">A list of <see cref="OAuthParameter"/>.</param>
+    /// <param name="realm">Optional realm value.</param>
+    /// <returns><see cref="AuthenticationHeaderValue"/> with correct parameters and signature.</returns>
     public static AuthenticationHeaderValue GenerateAuthorizationHeaderValue(
         IList<OAuthParameter> parameters,
         string? realm = default

@@ -2,6 +2,9 @@ namespace LeanOAuth.Core.Common;
 
 public static class OAuthConstants
 {
+    /// <summary>
+    /// Used to set an authentication schema./>
+    /// </summary>
     public const string AuthorizationHeaderScheme = "OAuth";
     public const string Version = "1.0";
 

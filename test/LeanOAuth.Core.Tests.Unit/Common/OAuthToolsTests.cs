@@ -13,7 +13,7 @@ public class OAuthToolsTests
         string expected
     )
     {
-        var result = OAuthTools.GenerateQueryParametersValue(parameters);
+        var result = OAuthTools.GenerateQueryStringParametersValue(parameters);
 
         result.Should().Be(expected);
     }

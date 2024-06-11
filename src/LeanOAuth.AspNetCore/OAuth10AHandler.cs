@@ -16,6 +16,14 @@ using Microsoft.Extensions.Primitives;
 
 namespace LeanOAuth.AspNetCore;
 
+/// <summary>
+/// <inheritdoc cref="RemoteAuthenticationHandler{TOptions}"/>
+/// </summary>
+/// <param name="options">The OAuth1.0A options.</param>
+/// <param name="logger">The logger.</param>
+/// <param name="encoder">The url encoder.</param>
+/// <param name="authorizationParametersFactory">The authorization parameters factory for obtaining parameters with valid signature.</param>
+/// <typeparam name="TOptions">Interface for OAuth1.0A settings.</typeparam>
 public class OAuth10AHandler<TOptions>(
     IOptionsMonitor<TOptions> options,
     ILoggerFactory logger,
