@@ -2,7 +2,7 @@ using LeanOAuth.Core.Common;
 
 namespace LeanOAuth.Core.Abstractions;
 
-public interface IOAuthHeaderFactory<TOAuthOptions>
+public interface IOAuthAuthorizationHeaderFactory<TOAuthOptions>
     where TOAuthOptions : IOAuthOptions
 {
     string CreateRequestTokenRequestHeader(HttpMethod httpMethod, Uri callbackUrl);

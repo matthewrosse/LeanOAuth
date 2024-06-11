@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Authentication;
 
-namespace LeanOAuth.AspNetCore;
+namespace LeanOAuth.AspNetCore.Events;
 
 public record OAuth10ATokenExchangeContext(
     AuthenticationProperties Properties,

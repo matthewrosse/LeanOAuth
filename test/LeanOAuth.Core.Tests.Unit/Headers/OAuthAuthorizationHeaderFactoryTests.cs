@@ -24,7 +24,7 @@ public record TestOAuthOptions(
 }
 
 // TODO: Look for some reliable test data.
-public class OAuthHeaderFactoryTests
+public class OAuthAuthorizationHeaderFactoryTests
 {
     [Fact]
     public void CreateRequestTokenHeader_ShouldCreateValidHeader()
@@ -59,7 +59,7 @@ public class OAuthHeaderFactoryTests
         timeProvider.LocalTimeZone.Returns(TimeZoneInfo.Utc);
         timeProvider.GetUtcNow().Returns(DateTimeOffset.FromUnixTimeSeconds(1191242090));
 
-        var sut = new OAuthHeaderFactory<TestOAuthOptions>(
+        var sut = new OAuthAuthorizationHeaderFactory<TestOAuthOptions>(
             testOptions,
             signatureCalculator,
             timeProvider,
@@ -114,7 +114,7 @@ public class OAuthHeaderFactoryTests
         timeProvider.LocalTimeZone.Returns(TimeZoneInfo.Utc);
         timeProvider.GetUtcNow().Returns(DateTimeOffset.FromUnixTimeSeconds(1462028665));
 
-        var sut = new OAuthHeaderFactory<TestOAuthOptions>(
+        var sut = new OAuthAuthorizationHeaderFactory<TestOAuthOptions>(
             testOptions,
             signatureCalculator,
             timeProvider,

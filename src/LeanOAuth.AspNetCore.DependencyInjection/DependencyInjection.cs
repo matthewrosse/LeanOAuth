@@ -61,7 +61,10 @@ public static class DependencyInjection
             .Services.AddTransient<INonceGenerator, CryptographicallySecureNonceGenerator>()
             .AddTransient<OAuthSignatureCalculator, OAuthHmacSha1SignatureCalculator>()
             .AddSingleton(TimeProvider.System)
-            .AddScoped<IOAuthHeaderFactory<TOptions>, OAuthHeaderFactory<TOptions>>(sp =>
+            .AddScoped<
+                IOAuthAuthorizationHeaderFactory<TOptions>,
+                OAuthAuthorizationHeaderFactory<TOptions>
+            >(sp =>
             {
                 var optionsMonitor = sp.GetRequiredService<IOptionsMonitor<TOptions>>();
                 var options = optionsMonitor.Get(authenticationScheme);
@@ -69,7 +72,7 @@ public static class DependencyInjection
                 var signatureCalculator = sp.GetRequiredService<OAuthSignatureCalculator>();
                 var timeProvider = sp.GetRequiredService<TimeProvider>();
 
-                return new OAuthHeaderFactory<TOptions>(
+                return new OAuthAuthorizationHeaderFactory<TOptions>(
                     options,
                     signatureCalculator,
                     timeProvider,

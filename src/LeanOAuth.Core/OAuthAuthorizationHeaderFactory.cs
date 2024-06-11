@@ -7,12 +7,12 @@ using LeanOAuth.Core.Signatures.Abstractions;
 
 namespace LeanOAuth.Core;
 
-public sealed class OAuthHeaderFactory<TOAuthOptions>(
+public sealed class OAuthAuthorizationHeaderFactory<TOAuthOptions>(
     TOAuthOptions options,
     OAuthSignatureCalculator signatureCalculator,
     TimeProvider timeProvider,
     INonceGenerator nonceGenerator
-) : IOAuthHeaderFactory<TOAuthOptions>
+) : IOAuthAuthorizationHeaderFactory<TOAuthOptions>
     where TOAuthOptions : IOAuthOptions
 {
     public string CreateRequestTokenRequestHeader(HttpMethod httpMethod, Uri callbackUrl) =>
