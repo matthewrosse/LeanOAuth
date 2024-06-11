@@ -11,8 +11,8 @@ public sealed class OAuthHmacSha1SignatureCalculator : OAuthSignatureCalculator
 
     public override string Calculate(OAuthSignatureCreationContext context)
     {
-        var escapedConsumerSecret = Uri.EscapeDataString(context.ConsumerSecret);
-        var escapedTokenSecret = Uri.EscapeDataString(context.TokenSecret);
+        var escapedConsumerSecret = OAuthTools.UrlEncodeRelaxed(context.ConsumerSecret);
+        var escapedTokenSecret = OAuthTools.UrlEncodeRelaxed(context.TokenSecret);
 
         var key = Encoding.UTF8.GetBytes(
             string.Join('&', escapedConsumerSecret, escapedTokenSecret)
@@ -21,7 +21,10 @@ public sealed class OAuthHmacSha1SignatureCalculator : OAuthSignatureCalculator
         var signatureBase = CalculateSignatureBase(
             context.HttpMethod,
             context.RequestBaseUrl,
-            context.RequestParameters
+            context.RequestParameters.ToDictionary(
+                kvp => OAuthTools.UrlEncodeStrict(kvp.Key),
+                kvp => OAuthTools.UrlEncodeRelaxed(kvp.Value)
+            )
         );
 
         var signatureBaseBytes = Encoding.UTF8.GetBytes(signatureBase);
