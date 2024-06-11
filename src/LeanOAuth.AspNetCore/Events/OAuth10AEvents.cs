@@ -25,9 +25,17 @@ public class OAuth10AEvents<TOptions> : RemoteAuthenticationEvents
         return OnRedirectToAuthorizationEndpoint(context);
     }
 
+    /// <summary>
+    /// Gets or sets the function that is invoked when the CreatingTicket method is invoked.
+    /// </summary>
     public Func<OAuth10ACreatingTicketContext<TOptions>, Task> OnCreatingTicket { get; set; } =
         context => Task.CompletedTask;
 
+    /// <summary>
+    /// Invoked after the provider successfully authenticates a user.
+    /// </summary>
+    /// <param name="context">Contains information about the login session as well as the user <see cref="System.Security.Claims.ClaimsIdentity"/>.</param>
+    /// <returns>A <see cref="Task"/> representing the completed operation.</returns>
     public virtual Task CreatingTicket(OAuth10ACreatingTicketContext<TOptions> context) =>
         OnCreatingTicket(context);
 }
