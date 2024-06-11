@@ -7,17 +7,14 @@ namespace LeanOAuth.Core;
 public static class OAuthResponseHelpers
 {
     public static async Task<UnauthorizedRequestTokenResponse> GetUnauthorizedRequestTokenResponseAsync(
-        HttpContent content,
-        CancellationToken cancellationToken = default
+        HttpContent content
     )
     {
-        var stream = await content.ReadAsStreamAsync(cancellationToken);
+        var stream = await content.ReadAsStreamAsync();
 
         using var sr = new StreamReader(stream);
 
-        var nameValueCollection = HttpUtility.ParseQueryString(
-            await sr.ReadToEndAsync(cancellationToken)
-        );
+        var nameValueCollection = HttpUtility.ParseQueryString(await sr.ReadToEndAsync());
 
         var token = nameValueCollection[OAuthConstants.Responses.UnauthorizedRequestToken.Token];
         var tokenSecret = nameValueCollection[
@@ -36,5 +33,22 @@ public static class OAuthResponseHelpers
             tokenSecret,
             bool.Parse(callbackConfirmed)
         );
+    }
+
+    public static async Task<AccessTokenResponse> GetAccessTokenResponseAsync(HttpContent content)
+    {
+        var stream = await content.ReadAsStreamAsync();
+
+        using var sr = new StreamReader(stream);
+
+        var nameValueCollection = HttpUtility.ParseQueryString(await sr.ReadToEndAsync());
+
+        var token = nameValueCollection[OAuthConstants.Responses.AccessToken.Token];
+        var tokenSecret = nameValueCollection[OAuthConstants.Responses.AccessToken.TokenSecret];
+
+        ArgumentNullException.ThrowIfNull(token);
+        ArgumentNullException.ThrowIfNull(tokenSecret);
+
+        return new AccessTokenResponse(token, tokenSecret);
     }
 }
