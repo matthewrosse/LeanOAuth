@@ -15,38 +15,102 @@ public sealed class OAuthHeaderFactory<TOAuthOptions>(
 ) : IOAuthHeaderFactory<TOAuthOptions>
     where TOAuthOptions : IOAuthOptions
 {
-    public string CreateRequestTokenHeader(HttpMethod httpMethod, Uri callbackUrl) =>
-        CreateRequestTokenHeader(httpMethod, callbackUrl, new Dictionary<string, string>());
+    public string CreateRequestTokenRequestHeader(HttpMethod httpMethod, Uri callbackUrl) =>
+        CreateRequestHeader(
+            options.RequestTokenEndpoint,
+            httpMethod,
+            string.Empty,
+            () => BuildRequestTokenSpecificHeaderParameters(callbackUrl)
+        );
 
-    public string CreateRequestTokenHeader(
+    public string CreateRequestTokenRequestHeader(
         HttpMethod httpMethod,
         Uri callbackUrl,
+        IDictionary<string, string> additionalParameters
+    ) =>
+        CreateRequestHeader(
+            options.RequestTokenEndpoint,
+            httpMethod,
+            string.Empty,
+            () => BuildRequestTokenSpecificHeaderParameters(callbackUrl),
+            additionalParameters
+        );
+
+    public string CreateAccessTokenRequestHeader(
+        HttpMethod httpMethod,
+        string token,
+        string tokenSecret,
+        string verifier
+    ) =>
+        CreateRequestHeader(
+            options.AccessTokenEndpoint,
+            httpMethod,
+            tokenSecret,
+            () => BuildAccessTokenSpecificHeaderParameters(token, verifier)
+        );
+
+    public string CreateAccessTokenRequestHeader(
+        HttpMethod httpMethod,
+        string token,
+        string tokenSecret,
+        string verifier,
+        IDictionary<string, string> additionalParameters
+    ) =>
+        CreateRequestHeader(
+            options.AccessTokenEndpoint,
+            httpMethod,
+            tokenSecret,
+            () => BuildAccessTokenSpecificHeaderParameters(token, verifier),
+            additionalParameters
+        );
+
+    private string CreateRequestHeader(
+        Uri endpoint,
+        HttpMethod httpMethod,
+        string tokenSecret,
+        Func<IDictionary<string, string>> buildRequestSpecificHeaderParametersFactory
+    ) =>
+        CreateRequestHeader(
+            endpoint,
+            httpMethod,
+            tokenSecret,
+            buildRequestSpecificHeaderParametersFactory,
+            new Dictionary<string, string>()
+        );
+
+    private string CreateRequestHeader(
+        Uri endpoint,
+        HttpMethod httpMethod,
+        string tokenSecret,
+        Func<IDictionary<string, string>> buildRequestSpecificHeaderParametersFactory,
         IDictionary<string, string> additionalParameters
     )
     {
         var timestamp = timeProvider.GetLocalNow().ToUnixTimeSeconds();
         var nonce = nonceGenerator.Generate();
 
-        var headerParameters = BuildRequestTokenHeaderParameters(
-            callbackUrl,
-            timestamp,
-            nonce,
-            additionalParameters
+        var basicHeaderParameters = BuildHeaderParameters(timestamp, nonce);
+
+        var requestSpecificHeaderParameters = buildRequestSpecificHeaderParametersFactory();
+
+        var headerParameters = MergeParameters(
+            basicHeaderParameters,
+            requestSpecificHeaderParameters
         );
 
-        var allParameters = MergeDictionaries(headerParameters, additionalParameters);
+        var parametersForSignature = MergeParameters(headerParameters, additionalParameters);
 
         var signature = signatureCalculator.Calculate(
             new OAuthSignatureCreationContext(
                 httpMethod,
-                options.RequestTokenEndpoint,
-                allParameters,
+                endpoint,
+                parametersForSignature,
                 options.ConsumerSecret,
-                string.Empty
+                tokenSecret
             )
         );
 
-        var finalParameters = MergeDictionaries(
+        var headerParametersWithSignature = MergeParameters(
             headerParameters,
             new Dictionary<string, string>
             {
@@ -61,10 +125,10 @@ public sealed class OAuthHeaderFactory<TOAuthOptions>(
             .Append(
                 string.Join(
                     ",",
-                    finalParameters
+                    headerParametersWithSignature
                         .ToDictionary(
-                            kvp => Uri.EscapeDataString(kvp.Key),
-                            kvp => Uri.EscapeDataString(kvp.Value)
+                            kvp => OAuthTools.UrlEncodeStrict(kvp.Key),
+                            kvp => OAuthTools.UrlEncodeRelaxed(kvp.Value)
                         )
                         .Select(kvp => $@"{kvp.Key}=""{kvp.Value}""")
                 )
@@ -75,13 +139,8 @@ public sealed class OAuthHeaderFactory<TOAuthOptions>(
     }
 
     [Pure]
-    private IDictionary<string, string> BuildHeaderParameters(
-        long timestamp,
-        string nonce,
-        IDictionary<string, string> additionalParameters
-    )
-    {
-        var defaultHeaderParameters = new Dictionary<string, string>()
+    private IDictionary<string, string> BuildHeaderParameters(long timestamp, string nonce) =>
+        new Dictionary<string, string>
         {
             { OAuthConstants.ParameterNames.ConsumerKey, options.ConsumerKey },
             { OAuthConstants.ParameterNames.Nonce, nonce },
@@ -90,17 +149,9 @@ public sealed class OAuthHeaderFactory<TOAuthOptions>(
             { OAuthConstants.ParameterNames.Version, OAuthConstants.Version },
         };
 
-        var parameters = MergeDictionaries(defaultHeaderParameters, additionalParameters);
-
-        return parameters;
-    }
-
     [Pure]
-    private IDictionary<string, string> BuildRequestTokenHeaderParameters(
-        Uri callbackEndpoint,
-        long timestamp,
-        string nonce,
-        IDictionary<string, string> additionalParameters
+    private IDictionary<string, string> BuildRequestTokenSpecificHeaderParameters(
+        Uri callbackEndpoint
     )
     {
         var parametersToBeAdded = new Dictionary<string, string>
@@ -108,25 +159,25 @@ public sealed class OAuthHeaderFactory<TOAuthOptions>(
             { OAuthConstants.ParameterNames.Callback, callbackEndpoint.ToString() },
         };
 
-        if (options.Scopes.Count is not 0)
-        {
-            parametersToBeAdded.Add(
-                options.ScopeParameterName,
-                string.Join(options.ScopeParameterSeparator, options.Scopes)
-            );
-        }
-
-        var mergedParameters = MergeDictionaries(additionalParameters, parametersToBeAdded);
-
-        return BuildHeaderParameters(timestamp, nonce, mergedParameters);
+        return parametersToBeAdded;
     }
 
+    private IDictionary<string, string> BuildAccessTokenSpecificHeaderParameters(
+        string token,
+        string verifier
+    ) =>
+        new Dictionary<string, string>
+        {
+            { OAuthConstants.ParameterNames.Token, token },
+            { OAuthConstants.ParameterNames.Verifier, verifier },
+        };
+
     [Pure]
-    private IDictionary<TKey, TValue> MergeDictionaries<TKey, TValue>(
-        params IDictionary<TKey, TValue>[] dictionaries
+    private IDictionary<TKey, TValue> MergeParameters<TKey, TValue>(
+        params IDictionary<TKey, TValue>[] parameters
     )
         where TKey : notnull =>
-        dictionaries
+        parameters
             .SelectMany(dict => dict)
             .GroupBy(pair => pair.Key)
             .ToDictionary(group => group.Key, group => group.First().Value);
