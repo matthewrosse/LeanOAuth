@@ -193,4 +193,4 @@ var response = await httpClient.SendAsync(requestMessage);
 Contributions are welcome! Please fork the repository and submit pull requests for any improvements or bug fixes.
 
 ## License
-This project is licensed under the MIT License. See the [link](https://github.com/matthewrosse/LeanOAuth/blog/main/LICENSE)
+This project is licensed under the MIT License. See the [link](https://github.com/matthewrosse/LeanOAuth/blog/main/LICENSE).
