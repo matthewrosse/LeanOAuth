@@ -4,7 +4,7 @@
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <Version>1.0.0</Version>
+        <Version>1.0.1</Version>
         <Title>LeanOAuth.Core</Title>
         <Authors>matthewrosse</Authors>
         <Description>The core package of LeanOAuth, an open source implementation of the OAuth1.0A RFC 5849 protocol in .NET. Part of LeanOAuth project.</Description>
@@ -12,11 +12,12 @@
         <RepositoryUrl>https://github.com/matthewrosse/LeanOAuth</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageTags>oauth,oauth1.0a,auth,dotnet</PackageTags>
-        <licenses>https://opensource.org/licenses/MIT</licenses>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <EnablePackageValidation>true</EnablePackageValidation>
         <GenerateDocumentationFile>True</GenerateDocumentationFile>
         <NoWarn>$(NoWarn);CS1591</NoWarn>
         <PackageOutputPath>../../artifacts/</PackageOutputPath>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
     </PropertyGroup>
 
     <ItemGroup>

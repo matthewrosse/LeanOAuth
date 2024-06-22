@@ -7,8 +7,8 @@
         <Authors>matthewrosse</Authors>
         <Description>Service collection extensions for LeanOAuth.AspNetCore</Description>
         <PackageProjectUrl>https://github.com/matthewrosse/LeanOAuth</PackageProjectUrl>
-        <licenses>https://opensource.org/licenses/MIT</licenses>
-        <Version>1.0.1</Version>
+        <Version>1.0.2</Version>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <RepositoryUrl>https://github.com/matthewrosse/LeanOAuth</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageTags>oauth,oauth1.0a,auth,dotnet,aspnetcore</PackageTags>
@@ -17,6 +17,7 @@
         <GenerateDocumentationFile>True</GenerateDocumentationFile>
         <NoWarn>$(NoWarn);CS1591</NoWarn>
         <PackageOutputPath>../../artifacts/</PackageOutputPath>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
     </PropertyGroup>
 
     <ItemGroup>
