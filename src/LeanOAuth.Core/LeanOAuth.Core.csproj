@@ -4,6 +4,31 @@
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <Version>1.0.0</Version>
+        <Title>LeanOAuth.Core</Title>
+        <Authors>matthewrosse</Authors>
+        <Description>The core package of LeanOAuth, an open source implementation of the OAuth1.0A RFC 5849 protocol in .NET. Part of LeanOAuth project.</Description>
+        <PackageProjectUrl>https://github.com/matthewrosse/LeanOAuth</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/matthewrosse/LeanOAuth</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageTags>oauth,oauth1.0a,auth,dotnet</PackageTags>
+        <licenses>https://opensource.org/licenses/MIT</licenses>
+        <EnablePackageValidation>true</EnablePackageValidation>
+        <GenerateDocumentationFile>True</GenerateDocumentationFile>
+        <NoWarn>$(NoWarn);CS1591</NoWarn>
+        <PackageOutputPath>../../artifacts/</PackageOutputPath>
     </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="DotNet.ReproducibleBuilds" Version="1.1.1">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="../../LICENSE" Pack="true" PackagePath="."/>
+        <None Include="../../README.md" Pack="true" PackagePath="."/>
+    </ItemGroup> 
 
 </Project>
