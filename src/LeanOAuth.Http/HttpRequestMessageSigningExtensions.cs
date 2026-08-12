@@ -1,4 +1,3 @@
-using System.Net;
 using LeanOAuth.Core;
 using LeanOAuth.Core.Credentials;
 
@@ -89,34 +88,6 @@ public static class HttpRequestMessageSigningExtensions
 #pragma warning restore CA2016
         var body = await content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
 
-        return ParseFormBody(body);
-    }
-
-    private static List<OAuthParameter> ParseFormBody(string body)
-    {
-        var parameters = new List<OAuthParameter>();
-
-        if (body.Length == 0)
-        {
-            return parameters;
-        }
-
-        foreach (var pair in body.Split('&'))
-        {
-            if (pair.Length == 0)
-            {
-                continue;
-            }
-
-            var separatorIndex = pair.IndexOf('=');
-            var key = separatorIndex < 0 ? pair : pair[..separatorIndex];
-            var value = separatorIndex < 0 ? string.Empty : pair[(separatorIndex + 1)..];
-
-            parameters.Add(
-                new OAuthParameter(WebUtility.UrlDecode(key), WebUtility.UrlDecode(value))
-            );
-        }
-
-        return parameters;
+        return FormUrlEncodedBody.Parse(body);
     }
 }
