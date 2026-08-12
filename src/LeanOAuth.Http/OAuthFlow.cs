@@ -27,7 +27,12 @@ public sealed class OAuthFlow
     private readonly string? _realm;
 
     /// <summary>Creates a flow for one provider, signing every request with <paramref name="clientCredentials"/>.</summary>
-    /// <param name="httpClient">Used to call the provider's endpoints. Not owned; the caller disposes it.</param>
+    /// <param name="httpClient">
+    /// Used to call the provider's endpoints. Not owned; the caller disposes it. Must not follow
+    /// redirects automatically — construct it with <c>AllowAutoRedirect = false</c> — because a
+    /// signature is bound to the request URI and method, and an auto-followed redirect can strip
+    /// the signed request before it reaches the provider.
+    /// </param>
     /// <param name="endpoints">The provider's three endpoints.</param>
     /// <param name="clientCredentials">The client credentials every request in the flow is signed with.</param>
     /// <param name="signer">The signer to use. Defaults to a new <see cref="OAuthSigner"/>.</param>

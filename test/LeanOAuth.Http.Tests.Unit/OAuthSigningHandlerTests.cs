@@ -99,6 +99,30 @@ public class OAuthSigningHandlerTests
         await Should.ThrowAsync<InvalidOperationException>(() => client.SendAsync(request, Ct));
     }
 
+    [Fact]
+    public async Task SendAsync_ReSignsWithAFreshNonceWhenTheSameRequestIsSentTwice()
+    {
+        // Simulates a retry handler (e.g. Polly), which re-sends the same HttpRequestMessage
+        // instance through the handler pipeline directly rather than via HttpClient.SendAsync.
+        var stub = new StubHttpMessageHandler(new HttpResponseMessage(HttpStatusCode.OK));
+        var handler = new OAuthSigningHandler(Credentials, signer: CreateSigner("nonce-1"))
+        {
+            InnerHandler = stub,
+        };
+        using var invoker = new HttpMessageInvoker(handler);
+        var request = new HttpRequestMessage(HttpMethod.Get, "http://example.com/resource");
+
+        await invoker.SendAsync(request, Ct);
+        var firstAuthorization = stub.LastRequest!.Headers.GetValues("Authorization").Single();
+
+        await invoker.SendAsync(request, Ct);
+        var secondAuthorization = stub.LastRequest!.Headers.GetValues("Authorization").Single();
+
+        firstAuthorization.ShouldContain("oauth_nonce=\"nonce-1\"");
+        secondAuthorization.ShouldContain("oauth_nonce=\"nonce-1\"");
+        request.Headers.GetValues("Authorization").Count().ShouldBe(1);
+    }
+
     [Theory]
     [InlineData(HttpStatusCode.MovedPermanently)]
     [InlineData(HttpStatusCode.Found)]

@@ -30,7 +30,7 @@ var endpoints = new OAuthProviderEndpoints(
     options.TokenRequestUri
 );
 
-using var httpClient = new HttpClient();
+using var httpClient = new HttpClient(new SocketsHttpHandler { AllowAutoRedirect = false });
 var flow = new OAuthFlow(httpClient, endpoints, clientCredentials);
 
 Console.WriteLine("Requesting temporary credentials...");

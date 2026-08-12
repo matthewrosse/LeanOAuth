@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Net;
 using LeanOAuth.Core;
 using LeanOAuth.Core.Credentials;
@@ -68,6 +69,18 @@ public sealed class OAuthSigningHandler : DelegatingHandler
         var token = request.Options.TryGetValue(TokenKey, out var perRequestToken)
             ? perRequestToken
             : _defaultToken;
+
+        // Retry handlers (e.g. Polly) reuse the same HttpRequestMessage across attempts, so a
+        // signature this handler attached on a prior attempt must be cleared before re-signing
+        // with a fresh nonce and timestamp. A caller-supplied Authorization header (any other
+        // scheme) is left alone so SignAsync still rejects it below.
+        if (
+            request.Headers.TryGetValues("Authorization", out var existingAuthorizationValues)
+            && existingAuthorizationValues.All(value => value.StartsWith("OAuth ", StringComparison.Ordinal))
+        )
+        {
+            request.Headers.Remove("Authorization");
+        }
 
         await request
             .SignAsync(_clientCredentials, token, _signer, cancellationToken)

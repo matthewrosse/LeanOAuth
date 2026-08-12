@@ -136,7 +136,7 @@ var endpoints = new OAuthProviderEndpoints(
     new Uri("https://example.com/oauth/access_token")
 );
 
-using var httpClient = new HttpClient();
+using var httpClient = new HttpClient(new SocketsHttpHandler { AllowAutoRedirect = false });
 var flow = new OAuthFlow(httpClient, endpoints, clientCredentials);
 
 var temporaryCredentials = await flow.RequestTemporaryCredentialsAsync(OAuthCallback.OutOfBand);
