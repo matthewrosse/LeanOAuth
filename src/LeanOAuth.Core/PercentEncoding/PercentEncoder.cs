@@ -33,8 +33,8 @@ public static class PercentEncoder
     }
 
     private static bool IsUnreserved(byte b) =>
-        (b >= (byte)'A' && b <= (byte)'Z') ||
-        (b >= (byte)'a' && b <= (byte)'z') ||
-        (b >= (byte)'0' && b <= (byte)'9') ||
-        b is (byte)'-' or (byte)'.' or (byte)'_' or (byte)'~';
+        (b >= (byte)'A' && b <= (byte)'Z')
+        || (b >= (byte)'a' && b <= (byte)'z')
+        || (b >= (byte)'0' && b <= (byte)'9')
+        || b is (byte)'-' or (byte)'.' or (byte)'_' or (byte)'~';
 }

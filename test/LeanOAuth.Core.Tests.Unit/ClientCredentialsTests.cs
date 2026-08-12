@@ -9,7 +9,9 @@ public class ClientCredentialsTests
     [Fact]
     public void ClientCredentials_HasNoPublicConstructor()
     {
-        var constructors = typeof(ClientCredentials).GetConstructors(BindingFlags.Public | BindingFlags.Instance);
+        var constructors = typeof(ClientCredentials).GetConstructors(
+            BindingFlags.Public | BindingFlags.Instance
+        );
 
         constructors.ShouldBeEmpty();
     }

@@ -16,9 +16,7 @@ public sealed class OAuthSigner
     private readonly OAuthSigningOptions _options;
 
     public OAuthSigner()
-        : this(new OAuthSigningOptions())
-    {
-    }
+        : this(new OAuthSigningOptions()) { }
 
     public OAuthSigner(OAuthSigningOptions options)
     {
@@ -42,7 +40,8 @@ public sealed class OAuthSigner
         ClientCredentials clientCredentials,
         OAuthToken? token = null,
         IReadOnlyList<OAuthParameter>? additionalParameters = null,
-        string? realm = null)
+        string? realm = null
+    )
     {
         ArgumentNullException.ThrowIfNull(method);
         ArgumentNullException.ThrowIfNull(requestUri);
@@ -53,7 +52,9 @@ public sealed class OAuthSigner
 
         var protocolParameters = BuildProtocolParameters(clientCredentials, token);
 
-        var allParameters = new List<OAuthParameter>(protocolParameters.Count + queryParameters.Count + extraParameters.Count);
+        var allParameters = new List<OAuthParameter>(
+            protocolParameters.Count + queryParameters.Count + extraParameters.Count
+        );
         allParameters.AddRange(protocolParameters);
         allParameters.AddRange(queryParameters);
         allParameters.AddRange(extraParameters);
@@ -63,21 +64,34 @@ public sealed class OAuthSigner
             : allParameters;
 
         var normalizedParameterString = BuildNormalizedParameterString(signedParameters);
-        var baseString = $"{method.Method.ToUpperInvariant()}&{PercentEncoder.Encode(normalizedUri)}&{PercentEncoder.Encode(normalizedParameterString)}";
+        var baseString =
+            $"{method.Method.ToUpperInvariant()}&{PercentEncoder.Encode(normalizedUri)}&{PercentEncoder.Encode(normalizedParameterString)}";
 
-        var signature = Convert.ToBase64String(ComputeSignature(clientCredentials, token, baseString));
+        var signature = Convert.ToBase64String(
+            ComputeSignature(clientCredentials, token, baseString)
+        );
 
         var additionalOAuthParameters = extraParameters
             .Where(p => p.Key.StartsWith("oauth_", StringComparison.Ordinal))
             .ToList();
-        var header = BuildAuthorizationHeader(protocolParameters, additionalOAuthParameters, signature, realm);
+        var header = BuildAuthorizationHeader(
+            protocolParameters,
+            additionalOAuthParameters,
+            signature,
+            realm
+        );
 
         return new OAuthSignature(header, baseString, signedParameters);
     }
 
-    private List<OAuthParameter> BuildProtocolParameters(ClientCredentials clientCredentials, OAuthToken? token)
+    private List<OAuthParameter> BuildProtocolParameters(
+        ClientCredentials clientCredentials,
+        OAuthToken? token
+    )
     {
-        var timestamp = _options.Clock.UtcNow.ToUnixTimeSeconds().ToString(CultureInfo.InvariantCulture);
+        var timestamp = _options
+            .Clock.UtcNow.ToUnixTimeSeconds()
+            .ToString(CultureInfo.InvariantCulture);
         var nonce = _options.NonceGenerator.GenerateNonce();
 
         var parameters = new List<OAuthParameter>(6)
@@ -97,30 +111,49 @@ public sealed class OAuthSigner
         return parameters;
     }
 
-    private static string GetSignatureMethodName(ClientCredentials credentials) => credentials switch
-    {
-        HmacSha1ClientCredentials => "HMAC-SHA1",
-        RsaSha1ClientCredentials => "RSA-SHA1",
-        PlainTextClientCredentials => "PLAINTEXT",
-        _ => throw new NotSupportedException($"Unsupported client credentials type '{credentials.GetType()}'."),
-    };
+    private static string GetSignatureMethodName(ClientCredentials credentials) =>
+        credentials switch
+        {
+            HmacSha1ClientCredentials => "HMAC-SHA1",
+            RsaSha1ClientCredentials => "RSA-SHA1",
+            PlainTextClientCredentials => "PLAINTEXT",
+            _
+                => throw new NotSupportedException(
+                    $"Unsupported client credentials type '{credentials.GetType()}'."
+                ),
+        };
 
-    private static byte[] ComputeSignature(ClientCredentials credentials, OAuthToken? token, string baseString) => credentials switch
-    {
-        HmacSha1ClientCredentials hmac => ComputeHmacSha1Signature(hmac, token, baseString),
-        _ => throw new NotSupportedException($"Signing with '{credentials.GetType().Name}' is not yet supported."),
-    };
+    private static byte[] ComputeSignature(
+        ClientCredentials credentials,
+        OAuthToken? token,
+        string baseString
+    ) =>
+        credentials switch
+        {
+            HmacSha1ClientCredentials hmac => ComputeHmacSha1Signature(hmac, token, baseString),
+            _
+                => throw new NotSupportedException(
+                    $"Signing with '{credentials.GetType().Name}' is not yet supported."
+                ),
+        };
 
 #pragma warning disable CA5350 // HMAC-SHA1 is the RFC 5849 signature method, not a discretionary crypto choice.
-    private static byte[] ComputeHmacSha1Signature(HmacSha1ClientCredentials credentials, OAuthToken? token, string baseString)
+    private static byte[] ComputeHmacSha1Signature(
+        HmacSha1ClientCredentials credentials,
+        OAuthToken? token,
+        string baseString
+    )
     {
-        var key = $"{PercentEncoder.Encode(credentials.ConsumerSecret)}&{PercentEncoder.Encode(token?.TokenSecret ?? string.Empty)}";
+        var key =
+            $"{PercentEncoder.Encode(credentials.ConsumerSecret)}&{PercentEncoder.Encode(token?.TokenSecret ?? string.Empty)}";
         using var hmac = new HMACSHA1(Encoding.UTF8.GetBytes(key));
         return hmac.ComputeHash(Encoding.UTF8.GetBytes(baseString));
     }
 #pragma warning restore CA5350
 
-    private static (string NormalizedUri, List<OAuthParameter> QueryParameters) NormalizeUri(Uri requestUri)
+    private static (string NormalizedUri, List<OAuthParameter> QueryParameters) NormalizeUri(
+        Uri requestUri
+    )
     {
         if (!requestUri.IsAbsoluteUri)
         {
@@ -129,18 +162,28 @@ public sealed class OAuthSigner
 
         if (requestUri.Scheme != Uri.UriSchemeHttp && requestUri.Scheme != Uri.UriSchemeHttps)
         {
-            throw new ArgumentException($"Request URI scheme '{requestUri.Scheme}' is not supported; only 'http' and 'https' are allowed.", nameof(requestUri));
+            throw new ArgumentException(
+                $"Request URI scheme '{requestUri.Scheme}' is not supported; only 'http' and 'https' are allowed.",
+                nameof(requestUri)
+            );
         }
 
         if (!string.IsNullOrEmpty(requestUri.UserInfo))
         {
-            throw new ArgumentException("Request URI must not contain userinfo.", nameof(requestUri));
+            throw new ArgumentException(
+                "Request URI must not contain userinfo.",
+                nameof(requestUri)
+            );
         }
 
         var scheme = requestUri.Scheme.ToLowerInvariant();
         var host = requestUri.Host.ToLowerInvariant();
-        var isDefaultPort = (scheme == "http" && requestUri.Port == 80) || (scheme == "https" && requestUri.Port == 443);
-        var authority = isDefaultPort ? host : $"{host}:{requestUri.Port.ToString(CultureInfo.InvariantCulture)}";
+        var isDefaultPort =
+            (scheme == "http" && requestUri.Port == 80)
+            || (scheme == "https" && requestUri.Port == 443);
+        var authority = isDefaultPort
+            ? host
+            : $"{host}:{requestUri.Port.ToString(CultureInfo.InvariantCulture)}";
 
         var normalizedUri = $"{scheme}://{authority}{requestUri.AbsolutePath}";
         var queryParameters = ParseQueryParameters(requestUri.Query);
@@ -195,7 +238,8 @@ public sealed class OAuthSigner
         IReadOnlyList<OAuthParameter> protocolParameters,
         IReadOnlyList<OAuthParameter> additionalOAuthParameters,
         string signature,
-        string? realm)
+        string? realm
+    )
     {
         var builder = new StringBuilder("OAuth ");
         var isFirst = true;
@@ -214,7 +258,11 @@ public sealed class OAuthSigner
             }
 
             isFirst = false;
-            builder.Append(parameter.Key).Append("=\"").Append(PercentEncoder.Encode(parameter.Value)).Append('"');
+            builder
+                .Append(parameter.Key)
+                .Append("=\"")
+                .Append(PercentEncoder.Encode(parameter.Value))
+                .Append('"');
         }
 
         if (!isFirst)
@@ -227,5 +275,8 @@ public sealed class OAuthSigner
         return builder.ToString();
     }
 
-    private static string EscapeQuotedString(string value) => value.Replace("\\", "\\\\", StringComparison.Ordinal).Replace("\"", "\\\"", StringComparison.Ordinal);
+    private static string EscapeQuotedString(string value) =>
+        value
+            .Replace("\\", "\\\\", StringComparison.Ordinal)
+            .Replace("\"", "\\\"", StringComparison.Ordinal);
 }

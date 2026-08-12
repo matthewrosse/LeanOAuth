@@ -4,4 +4,5 @@ namespace LeanOAuth.Core;
 public sealed record OAuthSignature(
     string AuthorizationHeaderValue,
     string SignatureBaseString,
-    IReadOnlyList<OAuthParameter> Parameters);
+    IReadOnlyList<OAuthParameter> Parameters
+);

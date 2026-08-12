@@ -45,23 +45,35 @@ public class PercentEncoderTests
             var c = encoded[i];
             if (c == '%')
             {
-                encoded.Length.ShouldBeGreaterThanOrEqualTo(i + 3, $"truncated percent triplet in '{encoded}'");
-                Uri.IsHexDigit(encoded[i + 1]).ShouldBeTrue($"non-hex digit after '%' in '{encoded}'");
-                Uri.IsHexDigit(encoded[i + 2]).ShouldBeTrue($"non-hex digit after '%' in '{encoded}'");
-                var isUppercaseTriplet = IsDigitOrUppercaseHexLetter(encoded[i + 1]) && IsDigitOrUppercaseHexLetter(encoded[i + 2]);
-                isUppercaseTriplet.ShouldBeTrue($"lowercase hex digit in percent triplet in '{encoded}'");
+                encoded.Length.ShouldBeGreaterThanOrEqualTo(
+                    i + 3,
+                    $"truncated percent triplet in '{encoded}'"
+                );
+                Uri.IsHexDigit(encoded[i + 1])
+                    .ShouldBeTrue($"non-hex digit after '%' in '{encoded}'");
+                Uri.IsHexDigit(encoded[i + 2])
+                    .ShouldBeTrue($"non-hex digit after '%' in '{encoded}'");
+                var isUppercaseTriplet =
+                    IsDigitOrUppercaseHexLetter(encoded[i + 1])
+                    && IsDigitOrUppercaseHexLetter(encoded[i + 2]);
+                isUppercaseTriplet.ShouldBeTrue(
+                    $"lowercase hex digit in percent triplet in '{encoded}'"
+                );
                 i += 3;
             }
             else
             {
                 var isUnreserved = char.IsAsciiLetterOrDigit(c) || c is '-' or '.' or '_' or '~';
-                isUnreserved.ShouldBeTrue($"unexpected non-unreserved character '{c}' at position {i} in '{encoded}'");
+                isUnreserved.ShouldBeTrue(
+                    $"unexpected non-unreserved character '{c}' at position {i} in '{encoded}'"
+                );
                 i++;
             }
         }
     }
 
-    private static bool IsDigitOrUppercaseHexLetter(char c) => char.IsAsciiDigit(c) || char.IsAsciiHexDigitUpper(c);
+    private static bool IsDigitOrUppercaseHexLetter(char c) =>
+        char.IsAsciiDigit(c) || char.IsAsciiHexDigitUpper(c);
 
     [Theory]
     [InlineData("hello world!")]
