@@ -146,8 +146,7 @@ public sealed class OAuthSigner
         string baseString
     )
     {
-        var key =
-            $"{PercentEncoder.Encode(credentials.ConsumerSecret)}&{PercentEncoder.Encode(token?.TokenSecret ?? string.Empty)}";
+        var key = BuildSharedSecretKey(credentials.ConsumerSecret, token);
         using var hmac = new HMACSHA1(Encoding.UTF8.GetBytes(key));
         return hmac.ComputeHash(Encoding.UTF8.GetBytes(baseString));
     }
@@ -156,8 +155,10 @@ public sealed class OAuthSigner
     private static string ComputePlainTextSignature(
         PlainTextClientCredentials credentials,
         OAuthToken? token
-    ) =>
-        $"{PercentEncoder.Encode(credentials.ConsumerSecret)}&{PercentEncoder.Encode(token?.TokenSecret ?? string.Empty)}";
+    ) => BuildSharedSecretKey(credentials.ConsumerSecret, token);
+
+    private static string BuildSharedSecretKey(string consumerSecret, OAuthToken? token) =>
+        $"{PercentEncoder.Encode(consumerSecret)}&{PercentEncoder.Encode(token?.TokenSecret ?? string.Empty)}";
 
     private static (string NormalizedUri, List<OAuthParameter> QueryParameters) NormalizeUri(
         Uri requestUri

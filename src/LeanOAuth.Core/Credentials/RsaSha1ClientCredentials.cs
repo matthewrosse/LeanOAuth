@@ -8,8 +8,6 @@ namespace LeanOAuth.Core.Credentials;
 /// </summary>
 public sealed record RsaSha1ClientCredentials : ClientCredentials
 {
-    private readonly object _signLock = new();
-
     public RsaSha1ClientCredentials(string consumerKey, RSA privateKey)
         : base(consumerKey)
     {
@@ -22,14 +20,15 @@ public sealed record RsaSha1ClientCredentials : ClientCredentials
 
     /// <summary>
     /// Signs <paramref name="data"/> with <see cref="PrivateKey"/> using SHA1 and PKCS#1 v1.5
-    /// padding, per RFC 5849 §3.4.3. Locked on this instance, not a static, because the
-    /// runtime's <see cref="RSA"/> implementations are not contractually thread-safe for
-    /// concurrent signing: two credentials holding different keys never contend, and only
-    /// concurrent signing through the same credential serializes.
+    /// padding, per RFC 5849 §3.4.3. Locked on <see cref="PrivateKey"/> itself, not a static,
+    /// because the runtime's <see cref="RSA"/> implementations are not contractually
+    /// thread-safe for concurrent signing: two credentials holding different keys never
+    /// contend, and only concurrent signing through the same key serializes -- even if that
+    /// key is wrapped by more than one credential instance.
     /// </summary>
     internal byte[] Sign(byte[] data)
     {
-        lock (_signLock)
+        lock (PrivateKey)
         {
             return PrivateKey.SignData(data, HashAlgorithmName.SHA1, RSASignaturePadding.Pkcs1);
         }
