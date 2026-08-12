@@ -93,7 +93,37 @@ public sealed class OAuth10ASignInTests
         body.ShouldBe("token:final-token;secret:final-secret");
     }
 
-    private static async Task<IHost> BuildHostAsync(HttpClient backchannel) =>
+    [Fact]
+    public async Task Challenge_encodes_the_scope_value_with_the_library_percent_encoder()
+    {
+        const string scopeValue = "read!write*('one')";
+        Uri? capturedRequestUri = null;
+        using var backchannel = new HttpClient(
+            new StubHttpMessageHandler(request =>
+            {
+                capturedRequestUri ??= request.RequestUri;
+                return FormResponse(
+                    "oauth_token=temp-token&oauth_token_secret=temp-secret&oauth_callback_confirmed=true"
+                );
+            })
+        );
+        using var host = await BuildHostAsync(
+            backchannel,
+            options => options.Scopes.Add(scopeValue)
+        );
+        using var client = host.GetTestClient();
+
+        await client.GetAsync("/login", TestContext.Current.CancellationToken);
+
+        var expected = LeanOAuth.Core.PercentEncoding.PercentEncoder.Encode(scopeValue);
+        capturedRequestUri.ShouldNotBeNull();
+        capturedRequestUri.Query.ShouldBe($"?scope={expected}");
+    }
+
+    private static async Task<IHost> BuildHostAsync(
+        HttpClient backchannel,
+        Action<OAuth10AOptions>? configure = null
+    ) =>
         await new HostBuilder()
             .ConfigureWebHost(webBuilder =>
                 webBuilder
@@ -123,6 +153,7 @@ public sealed class OAuth10ASignInTests
                                         TokenRequest
                                     );
                                     options.Backchannel = backchannel;
+                                    configure?.Invoke(options);
                                     options.Events.OnCreatingTicket = context =>
                                     {
                                         context.Identity!.AddClaim(

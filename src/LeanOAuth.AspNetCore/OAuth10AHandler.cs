@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using System.Text.Encodings.Web;
+using LeanOAuth.Core.PercentEncoding;
 using LeanOAuth.Http;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
@@ -238,7 +239,7 @@ public sealed class OAuth10AHandler(
             var scopeValue = string.Join(Options.ScopeParameterSeparator, Options.Scopes);
             var separator = endpoints.TemporaryCredentialRequest.Query.Length > 0 ? "&" : "?";
             var uri = new Uri(
-                $"{endpoints.TemporaryCredentialRequest}{separator}{Options.ScopeParameterName}={Uri.EscapeDataString(scopeValue)}"
+                $"{endpoints.TemporaryCredentialRequest}{separator}{Options.ScopeParameterName}={PercentEncoder.Encode(scopeValue)}"
             );
             endpoints = endpoints with { TemporaryCredentialRequest = uri };
         }
