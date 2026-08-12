@@ -3,9 +3,9 @@ name: Build
 on:
   workflow_dispatch:
   push:
-    branches: [main]
+    branches: [main, v2]
   pull_request:
-    branches: [main]
+    branches: [main, v2]
 
 jobs:
   build:
@@ -16,12 +16,16 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 8.0.x
+          dotnet-version: |
+            8.0.x
+            10.0.x
       - name: Restore dependencies
         run: dotnet restore
+      - name: Verify formatting
+        run: dotnet format --verify-no-changes
       - name: Build
         run: dotnet build -c Release --no-restore
       - name: Test Debug
-        run: dotnet test -c Debug --no-restore --verbosity normal --collect:"XPlat Code Coverage"
+        run: dotnet test -c Debug --no-restore --verbosity normal -- --coverage --coverage-output-format cobertura --coverage-output coverage.debug.cobertura.xml
       - name: Test Release
-        run: dotnet test -c Release --no-restore --verbosity normal --collect:"XPlat Code Coverage"
+        run: dotnet test -c Release --no-restore --verbosity normal -- --coverage --coverage-output-format cobertura --coverage-output coverage.release.cobertura.xml

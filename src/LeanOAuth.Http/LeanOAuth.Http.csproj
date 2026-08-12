@@ -1,17 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <Title>LeanOAuth.AspNetCore</Title>
-        <Description>ASP.NET Core sign-in handler and dependency injection extensions for LeanOAuth, an open source implementation of the OAuth1.0A RFC 5849 protocol in .NET. Part of LeanOAuth project.</Description>
-        <PackageTags>oauth,oauth1.0a,auth,dotnet,aspnetcore</PackageTags>
+        <IsAotCompatible>true</IsAotCompatible>
+        <Title>LeanOAuth.Http</Title>
+        <Description>HttpRequestMessage signing, the signing DelegatingHandler, and the three-legged flow for LeanOAuth, an open source implementation of the OAuth1.0A RFC 5849 protocol in .NET. Part of LeanOAuth project.</Description>
+        <PackageTags>oauth,oauth1.0a,auth,dotnet,http</PackageTags>
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\LeanOAuth.Http\LeanOAuth.Http.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <FrameworkReference Include="Microsoft.AspNetCore.App" />
+      <ProjectReference Include="..\LeanOAuth.Core\LeanOAuth.Core.csproj" />
     </ItemGroup>
 
     <ItemGroup>

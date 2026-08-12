@@ -6,7 +6,15 @@
       "version": "0.28.2",
       "commands": [
         "dotnet-csharpier"
-      ]
+      ],
+      "rollForward": false
+    },
+    "husky": {
+      "version": "0.9.1",
+      "commands": [
+        "husky"
+      ],
+      "rollForward": false
     }
   }
 }

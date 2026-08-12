@@ -1,0 +1,21 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Folder Name="/src/">
+    <Project Path="src/LeanOAuth.AspNetCore/LeanOAuth.AspNetCore.csproj" />
+    <Project Path="src/LeanOAuth.Core/LeanOAuth.Core.csproj" />
+    <Project Path="src/LeanOAuth.Http/LeanOAuth.Http.csproj" />
+  </Folder>
+  <Folder Name="/test/">
+    <Project Path="test/LeanOAuth.AspNetCore.Tests.Unit/LeanOAuth.AspNetCore.Tests.Unit.csproj" />
+    <Project Path="test/LeanOAuth.Core.Tests.Unit/LeanOAuth.Core.Tests.Unit.csproj" />
+    <Project Path="test/LeanOAuth.Http.Tests.Unit/LeanOAuth.Http.Tests.Unit.csproj" />
+  </Folder>
+  <Folder Name="/samples/">
+    <Project Path="samples/LeanOAuth.Samples.AspNetCore/LeanOAuth.Samples.AspNetCore.csproj" />
+    <Project Path="samples/LeanOAuth.Samples.Console/LeanOAuth.Samples.Console.csproj" />
+  </Folder>
+</Solution>

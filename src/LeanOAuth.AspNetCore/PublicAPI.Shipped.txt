@@ -1,0 +1,37 @@
+#nullable enable
+LeanOAuth.AspNetCore.OAuth10AAuthenticationBuilderExtensions
+LeanOAuth.AspNetCore.OAuth10ACreatingTicketContext
+LeanOAuth.AspNetCore.OAuth10ACreatingTicketContext.Backchannel.get -> System.Net.Http.HttpClient!
+LeanOAuth.AspNetCore.OAuth10ACreatingTicketContext.ClientCredentials.get -> LeanOAuth.Core.Credentials.ClientCredentials!
+LeanOAuth.AspNetCore.OAuth10ACreatingTicketContext.Identity.get -> System.Security.Claims.ClaimsIdentity?
+LeanOAuth.AspNetCore.OAuth10ACreatingTicketContext.OAuth10ACreatingTicketContext(Microsoft.AspNetCore.Http.HttpContext! context, Microsoft.AspNetCore.Authentication.AuthenticationScheme! scheme, LeanOAuth.AspNetCore.OAuth10AOptions! options, System.Security.Claims.ClaimsPrincipal! principal, Microsoft.AspNetCore.Authentication.AuthenticationProperties! properties, System.Net.Http.HttpClient! backchannel, LeanOAuth.Core.Credentials.ClientCredentials! clientCredentials, LeanOAuth.Http.TokenCredentials! tokenCredentials) -> void
+LeanOAuth.AspNetCore.OAuth10ACreatingTicketContext.TokenCredentials.get -> LeanOAuth.Http.TokenCredentials!
+LeanOAuth.AspNetCore.OAuth10AEvents
+LeanOAuth.AspNetCore.OAuth10AEvents.CreatingTicket(LeanOAuth.AspNetCore.OAuth10ACreatingTicketContext! context) -> System.Threading.Tasks.Task!
+LeanOAuth.AspNetCore.OAuth10AEvents.OAuth10AEvents() -> void
+LeanOAuth.AspNetCore.OAuth10AEvents.OnCreatingTicket.get -> System.Func<LeanOAuth.AspNetCore.OAuth10ACreatingTicketContext!, System.Threading.Tasks.Task!>!
+LeanOAuth.AspNetCore.OAuth10AEvents.OnCreatingTicket.set -> void
+LeanOAuth.AspNetCore.OAuth10AEvents.OnRedirectToAuthorizationEndpoint.get -> System.Func<Microsoft.AspNetCore.Authentication.RedirectContext<LeanOAuth.AspNetCore.OAuth10AOptions!>!, System.Threading.Tasks.Task!>!
+LeanOAuth.AspNetCore.OAuth10AEvents.OnRedirectToAuthorizationEndpoint.set -> void
+LeanOAuth.AspNetCore.OAuth10AEvents.RedirectToAuthorizationEndpoint(Microsoft.AspNetCore.Authentication.RedirectContext<LeanOAuth.AspNetCore.OAuth10AOptions!>! context) -> System.Threading.Tasks.Task!
+LeanOAuth.AspNetCore.OAuth10AHandler
+LeanOAuth.AspNetCore.OAuth10AHandler.OAuth10AHandler(Microsoft.Extensions.Options.IOptionsMonitor<LeanOAuth.AspNetCore.OAuth10AOptions!>! options, Microsoft.Extensions.Logging.ILoggerFactory! logger, System.Text.Encodings.Web.UrlEncoder! encoder) -> void
+LeanOAuth.AspNetCore.OAuth10AOptions
+LeanOAuth.AspNetCore.OAuth10AOptions.ClientCredentials.get -> LeanOAuth.Core.Credentials.ClientCredentials!
+LeanOAuth.AspNetCore.OAuth10AOptions.ClientCredentials.set -> void
+LeanOAuth.AspNetCore.OAuth10AOptions.Endpoints.get -> LeanOAuth.Http.OAuthProviderEndpoints!
+LeanOAuth.AspNetCore.OAuth10AOptions.Endpoints.set -> void
+LeanOAuth.AspNetCore.OAuth10AOptions.Events.get -> LeanOAuth.AspNetCore.OAuth10AEvents!
+LeanOAuth.AspNetCore.OAuth10AOptions.Events.set -> void
+LeanOAuth.AspNetCore.OAuth10AOptions.OAuth10AOptions() -> void
+LeanOAuth.AspNetCore.OAuth10AOptions.Realm.get -> string?
+LeanOAuth.AspNetCore.OAuth10AOptions.Realm.set -> void
+LeanOAuth.AspNetCore.OAuth10AOptions.ScopeParameterName.get -> string!
+LeanOAuth.AspNetCore.OAuth10AOptions.ScopeParameterName.set -> void
+LeanOAuth.AspNetCore.OAuth10AOptions.ScopeParameterSeparator.get -> char
+LeanOAuth.AspNetCore.OAuth10AOptions.ScopeParameterSeparator.set -> void
+LeanOAuth.AspNetCore.OAuth10AOptions.Scopes.get -> System.Collections.Generic.ICollection<string!>!
+LeanOAuth.AspNetCore.OAuth10AOptions.StateDataFormat.get -> Microsoft.AspNetCore.Authentication.ISecureDataFormat<Microsoft.AspNetCore.Authentication.AuthenticationProperties!>!
+LeanOAuth.AspNetCore.OAuth10AOptions.StateDataFormat.set -> void
+override LeanOAuth.AspNetCore.OAuth10AOptions.Validate() -> void
+static LeanOAuth.AspNetCore.OAuth10AAuthenticationBuilderExtensions.AddOAuth10A(this Microsoft.AspNetCore.Authentication.AuthenticationBuilder! builder, string! authenticationScheme, System.Action<LeanOAuth.AspNetCore.OAuth10AOptions!>! configureOptions) -> Microsoft.AspNetCore.Authentication.AuthenticationBuilder!

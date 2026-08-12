@@ -1,15 +1,8 @@
 using System.Security.Claims;
 using System.Text.Encodings.Web;
-using System.Text.Json;
-using LeanOAuth.AspNetCore.Events;
-using LeanOAuth.AspNetCore.Exceptions;
-using LeanOAuth.AspNetCore.Options;
-using LeanOAuth.Core;
-using LeanOAuth.Core.Abstractions;
-using LeanOAuth.Core.Common;
-using LeanOAuth.Core.Responses;
+using LeanOAuth.Core.PercentEncoding;
+using LeanOAuth.Http;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
@@ -17,320 +10,246 @@ using Microsoft.Extensions.Primitives;
 namespace LeanOAuth.AspNetCore;
 
 /// <summary>
-/// <inheritdoc cref="RemoteAuthenticationHandler{TOptions}"/>
+/// Signs a resource owner in with OAuth 1.0a (RFC 5849 §2). Built entirely on the public surface
+/// of <see cref="OAuthFlow"/> and the credential and token types below it: nothing here reaches
+/// into an internal of a lower layer.
 /// </summary>
-/// <param name="options">The OAuth1.0A options.</param>
-/// <param name="logger">The logger.</param>
-/// <param name="encoder">The url encoder.</param>
-/// <param name="authorizationParametersFactory">The authorization parameters factory for obtaining parameters with valid signature.</param>
-/// <typeparam name="TOptions">Interface for OAuth1.0A settings.</typeparam>
-public class OAuth10AHandler<TOptions>(
-    IOptionsMonitor<TOptions> options,
+/// <param name="options">The handler's options, monitored for changes.</param>
+/// <param name="logger">The logger factory used to create the handler's logger.</param>
+/// <param name="encoder">The URL encoder used when building redirect URIs.</param>
+public sealed class OAuth10AHandler(
+    IOptionsMonitor<OAuth10AOptions> options,
     ILoggerFactory logger,
-    UrlEncoder encoder,
-    IOAuthAuthorizationParametersFactory authorizationParametersFactory
-) : RemoteAuthenticationHandler<TOptions>(options, logger, encoder)
-    where TOptions : OAuth10AOptions, new()
+    UrlEncoder encoder
+) : RemoteAuthenticationHandler<OAuth10AOptions>(options, logger, encoder)
 {
-    private const string StateParameterName = "state";
+    private const string TokenItemKey = "LeanOAuth.Token";
+    private const string TokenSecretItemKey = "LeanOAuth.TokenSecret";
+    private const string OAuthTokenParameterName = "oauth_token";
+    private const string OAuthVerifierParameterName = "oauth_verifier";
     private const string ErrorParameterName = "error";
-    private const string ErrorAccessDenied = "access_denied";
+    private const string AccessDeniedError = "access_denied";
 
-    /// <summary>
-    /// Gets the <see cref="T:System.Net.Http.HttpClient" /> instance used to communicate with the remote authentication provider.
-    /// </summary>
-    private HttpClient Backchannel => Options.Backchannel;
-
-    /// <summary>
-    /// The handler calls methods on the events which give the application control at certain points where processing is occurring.
-    /// If it is not provided a default instance is supplied which does nothing when the methods are called.
-    /// </summary>
-    private new OAuth10AEvents<TOptions> Events
+    private new OAuth10AEvents Events
     {
-        get => (OAuth10AEvents<TOptions>)base.Events;
+        get => (OAuth10AEvents)base.Events;
         set => base.Events = value;
     }
 
     /// <summary>
-    /// Creates a new instance of the events instance.
+    /// Scoped by scheme name, so two <c>AddOAuth10A</c> registrations in the same application
+    /// never share a state cookie.
     /// </summary>
-    /// <returns>A new instance of the events instance.</returns>
-    protected override Task<object> CreateEventsAsync() =>
-        Task.FromResult<object>(new OAuth10AEvents<TOptions>());
+    private string StateCookieName => $"LeanOAuth.State.{Scheme.Name}";
 
-    protected override async Task<HandleRequestResult> HandleRemoteAuthenticateAsync()
-    {
-        var query = Request.Query;
-
-        var state = Context.Request.Cookies[StateParameterName];
-        var properties = Options.StateDataFormat.Unprotect(state);
-
-        Context.Response.Cookies.Delete(StateParameterName);
-
-        if (properties is null)
-        {
-            return HandleRequestResult.Fail("The oauth state was missing or invalid");
-        }
-
-        var error = query[ErrorParameterName];
-
-        if (!StringValues.IsNullOrEmpty(error))
-        {
-            // access_denied error indicates that the user didn't
-            // approve the authorization demand requested by the remote authorization server
-            // Since it's a frequent scenario (that is not caused by incorrect configuration),
-            // denied errors are handled differently using HandleAccessDeniedErrorAsync().
-            if (StringValues.Equals(error, ErrorAccessDenied))
-            {
-                var result = await HandleAccessDeniedErrorAsync(properties);
-                if (!result.None)
-                {
-                    return result;
-                }
-
-                var deniedEx = new AuthenticationFailureException(
-                    "Access was denied by the resource owner or by the remote server."
-                );
-                deniedEx.Data[ErrorParameterName] = error.ToString();
-
-                return HandleRequestResult.Fail(deniedEx, properties);
-            }
-
-            var failureMessage = error.ToString();
-
-            var ex = new AuthenticationFailureException(failureMessage);
-
-            return HandleRequestResult.Fail(ex, properties);
-        }
-
-        var token = query[OAuthConstants.ParameterNames.Token];
-
-        if (StringValues.IsNullOrEmpty(token))
-        {
-            return HandleRequestResult.Fail("Token was not found.", properties);
-        }
-
-        var tokenSecret = properties.Items[OAuthConstants.ParameterNames.TokenSecret];
-
-        if (tokenSecret is null)
-        {
-            return HandleRequestResult.Fail("Token secret was not found.", properties);
-        }
-
-        var verifier = query[OAuthConstants.ParameterNames.Verifier];
-
-        if (StringValues.IsNullOrEmpty(verifier))
-        {
-            return HandleRequestResult.Fail("Verifier was not found.", properties);
-        }
-
-        var tokenExchangeContext = new OAuth10ATokenExchangeContext(
-            properties,
-            token.ToString(),
-            tokenSecret,
-            verifier.ToString()
-        );
-
-        var accessTokenResponse = await ExchangeRequestTokenForAccessTokenAsync(
-            tokenExchangeContext
-        );
-
-        var identity = new ClaimsIdentity(ClaimsIssuer);
-
-        if (Options.SaveTokens)
-        {
-            var authTokens = new List<AuthenticationToken>
-            {
-                new() { Name = OAuthConstants.ParameterNames.Token, Value = token! },
-                new() { Name = OAuthConstants.ParameterNames.TokenSecret, Value = tokenSecret }
-            };
-
-            properties.StoreTokens(authTokens);
-        }
-
-        var ticket = await CreateTicketAsync(identity, properties, accessTokenResponse);
-
-        return HandleRequestResult.Success(ticket);
-    }
-
-    private async Task<AuthenticationTicket> CreateTicketAsync(
-        ClaimsIdentity identity,
-        AuthenticationProperties properties,
-        AccessTokenResponse accessTokenResponse
-    )
-    {
-        using var user = JsonDocument.Parse("{}");
-
-        var context = new OAuth10ACreatingTicketContext<TOptions>(
-            new ClaimsPrincipal(identity),
-            properties,
-            Context,
-            Scheme,
-            Options,
-            Backchannel,
-            authorizationParametersFactory,
-            accessTokenResponse,
-            user.RootElement
-        );
-
-        await Events.CreatingTicket(context);
-
-        return new AuthenticationTicket(context.Principal!, context.Properties, Scheme.Name);
-    }
-
-    private async Task<AccessTokenResponse> ExchangeRequestTokenForAccessTokenAsync(
-        OAuth10ATokenExchangeContext context
-    )
-    {
-        var accessTokenRequestParameters =
-            authorizationParametersFactory.CreateAccessTokenRequestParameters(
-                HttpMethod.Post,
-                context.Token,
-                context.TokenSecret,
-                context.Verifier
-            );
-
-        var authorizationHeader = OAuthTools.GenerateAuthorizationHeaderValue(
-            accessTokenRequestParameters,
-            Options.Realm
-        );
-
-        var requestMessage = OAuthRequestHelpers.PreparePostRequestMessage(
-            Options.AccessTokenEndpoint,
-            authorizationHeader
-        );
-
-        var response = await Backchannel.SendAsync(requestMessage);
-
-        if (!response.IsSuccessStatusCode)
-        {
-            throw new AccessTokenRequestException(
-                "Could not exchange request token for an access token. There's a possibility that the request token has expired."
-            );
-        }
-
-        var accessTokenResponse = await OAuthResponseHelpers.GetAccessTokenResponseAsync(
-            response.Content
-        );
-
-        return accessTokenResponse;
-    }
-
-    private async Task<UnauthorizedRequestTokenResponse> GetUnauthorizedRequestTokenResponseAsync(
-        string callbackUri
-    )
-    {
-        var scopes = string.Join(Options.ScopeParameterSeparator, Options.Scopes);
-
-        var requestTokenRequestParameters =
-            authorizationParametersFactory.CreateRequestTokenRequestParameters(
-                HttpMethod.Post,
-                new Uri(callbackUri),
-                [new OAuthParameter(Options.ScopeParameterName, scopes)]
-            );
-
-        var authorizationHeaderValue = OAuthTools.GenerateAuthorizationHeaderValue(
-            requestTokenRequestParameters,
-            Options.Realm
-        );
-
-        var requestQueryString =
-            scopes.Length > 0
-                ? $"?{Options.ScopeParameterName}={OAuthTools.UrlEncodeRelaxed(scopes)}"
-                : string.Empty;
-
-        var requestMessage = OAuthRequestHelpers.PreparePostRequestMessage(
-            new Uri($"{Options.RequestTokenEndpoint.ToString()}{requestQueryString}"),
-            authorizationHeaderValue
-        );
-
-        var response = await Backchannel.SendAsync(requestMessage);
-
-        if (!response.IsSuccessStatusCode)
-        {
-            throw new UnauthorizedTemporaryCredentialsRequestException(
-                "The request was not authorized, possible reasons: wrong credentials."
-            );
-        }
-
-        var unauthorizedRequestTokenResponse =
-            await OAuthResponseHelpers.GetUnauthorizedRequestTokenResponseAsync(response.Content);
-
-        return unauthorizedRequestTokenResponse;
-    }
-
+    /// <inheritdoc />
     protected override async Task HandleChallengeAsync(AuthenticationProperties properties)
     {
+        ArgumentNullException.ThrowIfNull(properties);
+
         if (string.IsNullOrEmpty(properties.RedirectUri))
         {
             properties.RedirectUri = OriginalPathBase + OriginalPath + Request.QueryString;
         }
 
         var callbackUri = BuildRedirectUri(Options.CallbackPath);
+        var flow = CreateFlow();
 
-        var unauthorizedRequestTokenResponse = await GetUnauthorizedRequestTokenResponseAsync(
-            callbackUri
+        Log.RequestingTemporaryCredentials(Logger, Scheme.Name);
+
+        var temporaryCredentials = await flow.RequestTemporaryCredentialsAsync(
+                OAuthCallback.For(new Uri(callbackUri)),
+                Context.RequestAborted
+            )
+            .ConfigureAwait(false);
+
+        properties.Items[TokenItemKey] = temporaryCredentials.Token;
+        properties.Items[TokenSecretItemKey] = temporaryCredentials.TokenSecret;
+
+        var cookieOptions = Options.CorrelationCookie.Build(Context, TimeProvider.System.GetUtcNow());
+        Response.Cookies.Append(
+            StateCookieName,
+            Options.StateDataFormat.Protect(properties),
+            cookieOptions
         );
 
-        var authorizationEndpoint = BuildChallengeUrl(
-            properties,
-            callbackUri,
-            unauthorizedRequestTokenResponse.Token,
-            unauthorizedRequestTokenResponse.TokenSecret
-        );
-
-        var redirectContext = new RedirectContext<TOptions>(
+        var redirectUri = flow.BuildAuthorizationUri(temporaryCredentials).ToString();
+        var redirectContext = new RedirectContext<OAuth10AOptions>(
             Context,
             Scheme,
             Options,
             properties,
-            authorizationEndpoint
+            redirectUri
         );
 
-        await Events.RedirectToAuthorizationEndpoint(redirectContext);
+        Log.RedirectingToAuthorizationEndpoint(Logger, Scheme.Name);
 
-        var location = Context.Response.Headers.Location;
-
-        if (location == StringValues.Empty)
-        {
-            location = "(not set)";
-        }
-
-        var cookie = Context.Response.Headers.SetCookie;
-
-        if (cookie == StringValues.Empty)
-        {
-            cookie = "(not set)";
-        }
-
-        Logger.LogDebug(
-            "HandleChallenge with Location: {Location}; and Set-Cookie: {Cookie}., EventName = \"HandleChallenge\"",
-            location.ToString(),
-            cookie.ToString()
-        );
+        await Events.RedirectToAuthorizationEndpoint(redirectContext).ConfigureAwait(false);
     }
 
-    private string BuildChallengeUrl(
-        AuthenticationProperties properties,
-        string callbackUri,
-        string token,
-        string tokenSecret
-    )
+    /// <inheritdoc />
+    protected override async Task<HandleRequestResult> HandleRemoteAuthenticateAsync()
     {
-        var parameters = new Dictionary<string, string?>
+        var stateCookie = Request.Cookies[StateCookieName];
+        var deleteCookieOptions = Options.CorrelationCookie.Build(Context, TimeProvider.System.GetUtcNow());
+        Response.Cookies.Delete(StateCookieName, deleteCookieOptions);
+
+        if (string.IsNullOrEmpty(stateCookie))
         {
-            { OAuthConstants.ParameterNames.Token, token },
-            { OAuthConstants.ParameterNames.Callback, callbackUri }
-        };
+            return HandleRequestResult.Fail("The oauth state cookie was missing.");
+        }
 
-        // Store token secret for later retrieval in HandleRemoteAuthenticateAsync.
-        properties.Items.Add(OAuthConstants.ParameterNames.TokenSecret, tokenSecret);
+        var properties = Options.StateDataFormat.Unprotect(stateCookie);
+        if (properties is null)
+        {
+            return HandleRequestResult.Fail("The oauth state cookie could not be unprotected.");
+        }
 
-        Context.Response.Cookies.Append(
-            StateParameterName,
-            Options.StateDataFormat.Protect(properties)
+        var query = Request.Query;
+        var error = query[ErrorParameterName];
+        if (!StringValues.IsNullOrEmpty(error))
+        {
+            if (StringValues.Equals(error, AccessDeniedError))
+            {
+                var deniedResult = await HandleAccessDeniedErrorAsync(properties)
+                    .ConfigureAwait(false);
+                if (!deniedResult.None)
+                {
+                    return deniedResult;
+                }
+
+                return HandleRequestResult.Fail(
+                    new AuthenticationFailureException(
+                        "Access was denied by the resource owner or by the remote server."
+                    ),
+                    properties
+                );
+            }
+
+            return HandleRequestResult.Fail(
+                new AuthenticationFailureException(error.ToString()),
+                properties
+            );
+        }
+
+        if (
+            !properties.Items.TryGetValue(TokenItemKey, out var expectedToken)
+            || expectedToken is null
+        )
+        {
+            return HandleRequestResult.Fail("The oauth state is missing the temporary credential token.", properties);
+        }
+
+        if (
+            !properties.Items.TryGetValue(TokenSecretItemKey, out var tokenSecret)
+            || tokenSecret is null
+        )
+        {
+            return HandleRequestResult.Fail(
+                "The oauth state is missing the temporary credential token secret.",
+                properties
+            );
+        }
+
+        var token = query[OAuthTokenParameterName];
+        if (
+            StringValues.IsNullOrEmpty(token)
+            || !string.Equals(token, expectedToken, StringComparison.Ordinal)
+        )
+        {
+            return HandleRequestResult.Fail(
+                "The 'oauth_token' on the callback did not match the temporary credentials requested for this sign-in attempt.",
+                properties
+            );
+        }
+
+        var verifier = query[OAuthVerifierParameterName];
+        if (StringValues.IsNullOrEmpty(verifier))
+        {
+            return HandleRequestResult.Fail("The 'oauth_verifier' was missing from the callback.", properties);
+        }
+
+        var temporaryCredentials = new TemporaryCredentials(
+            token.ToString(),
+            tokenSecret,
+            CallbackConfirmed: true
         );
 
-        return QueryHelpers.AddQueryString(Options.AuthorizationEndpoint.ToString(), parameters);
+        TokenCredentials tokenCredentials;
+        try
+        {
+            var flow = CreateFlow();
+            tokenCredentials = await flow.ExchangeAsync(
+                    temporaryCredentials,
+                    verifier.ToString(),
+                    Context.RequestAborted
+                )
+                .ConfigureAwait(false);
+        }
+        catch (OAuthException ex)
+        {
+            Log.TokenExchangeFailed(Logger, Scheme.Name);
+            return HandleRequestResult.Fail(ex, properties);
+        }
+
+        if (Options.SaveTokens)
+        {
+            properties.StoreTokens(
+                [
+                    new AuthenticationToken { Name = "access_token", Value = tokenCredentials.Token },
+                    new AuthenticationToken
+                    {
+                        Name = "access_token_secret",
+                        Value = tokenCredentials.TokenSecret,
+                    },
+                ]
+            );
+        }
+
+        var principal = new ClaimsPrincipal(new ClaimsIdentity(ClaimsIssuer));
+        var ticketContext = new OAuth10ACreatingTicketContext(
+            Context,
+            Scheme,
+            Options,
+            principal,
+            properties,
+            Options.Backchannel,
+            Options.ClientCredentials,
+            tokenCredentials
+        );
+
+        await Events.CreatingTicket(ticketContext).ConfigureAwait(false);
+
+        Log.SignInSucceeded(Logger, Scheme.Name);
+
+        var ticket = new AuthenticationTicket(
+            ticketContext.Principal!,
+            ticketContext.Properties,
+            Scheme.Name
+        );
+
+        return HandleRequestResult.Success(ticket);
+    }
+
+    private OAuthFlow CreateFlow()
+    {
+        var endpoints = Options.Endpoints;
+
+        if (Options.Scopes.Count > 0)
+        {
+            var scopeValue = string.Join(Options.ScopeParameterSeparator, Options.Scopes);
+            var separator = endpoints.TemporaryCredentialRequest.Query.Length > 0 ? "&" : "?";
+            var uri = new Uri(
+                $"{endpoints.TemporaryCredentialRequest}{separator}{Options.ScopeParameterName}={PercentEncoder.Encode(scopeValue)}"
+            );
+            endpoints = endpoints with { TemporaryCredentialRequest = uri };
+        }
+
+        return new OAuthFlow(
+            Options.Backchannel,
+            endpoints,
+            Options.ClientCredentials,
+            options: new OAuthFlowOptions { Realm = Options.Realm }
+        );
     }
 }
