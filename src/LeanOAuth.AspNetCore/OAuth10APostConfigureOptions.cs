@@ -16,9 +16,9 @@ internal sealed class OAuth10APostConfigureOptions(IDataProtectionProvider dataP
 
         if (options.Backchannel is null)
         {
-            options.Backchannel = new HttpClient(
-                options.BackchannelHttpHandler ?? new HttpClientHandler()
-            )
+            options.BackchannelHttpHandler ??= new HttpClientHandler { AllowAutoRedirect = false };
+
+            options.Backchannel = new HttpClient(options.BackchannelHttpHandler)
             {
                 Timeout = options.BackchannelTimeout,
                 MaxResponseContentBufferSize = 10 * 1024 * 1024,

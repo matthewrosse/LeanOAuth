@@ -77,9 +77,12 @@ public sealed class OAuthSigningHandler : DelegatingHandler
 
         if (Array.IndexOf(RedirectStatusCodes, response.StatusCode) >= 0)
         {
+            var statusCode = response.StatusCode;
+            response.Dispose();
+
             throw new InvalidOperationException(
                 $"The request to '{request.RequestUri}' received an unexpected redirect "
-                    + $"({(int)response.StatusCode} {response.StatusCode}). OAuthSigningHandler "
+                    + $"({(int)statusCode} {statusCode}). OAuthSigningHandler "
                     + "signs the request URI; a redirect the runtime follows automatically "
                     + "re-sends to a different URI the signature was never bound to and always "
                     + "fails at the provider. Configure the primary HTTP handler with "

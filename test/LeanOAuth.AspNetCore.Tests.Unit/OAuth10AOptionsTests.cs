@@ -1,5 +1,10 @@
+using System.Net.Http;
 using LeanOAuth.Core.Credentials;
 using LeanOAuth.Http;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Shouldly;
 
 namespace LeanOAuth.AspNetCore.Tests.Unit;
@@ -49,5 +54,63 @@ public sealed class OAuth10AOptionsTests
 
         Should.NotThrow(options.Validate);
         options.Realm.ShouldBeNull();
+    }
+
+    [Fact]
+    public void PostConfigure_builds_a_default_backchannel_that_does_not_follow_redirects()
+    {
+        var services = new ServiceCollection();
+        services.AddDataProtection();
+        services
+            .AddAuthentication()
+            .AddCookie()
+            .AddOAuth10A(
+                "oauth10a",
+                options =>
+                {
+                    options.ClientCredentials = Credentials;
+                    options.Endpoints = Endpoints;
+                    options.CallbackPath = "/signin-oauth10a";
+                    options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                }
+            );
+
+        using var provider = services.BuildServiceProvider();
+        var options = provider
+            .GetRequiredService<IOptionsMonitor<OAuth10AOptions>>()
+            .Get("oauth10a");
+
+        options.BackchannelHttpHandler.ShouldBeOfType<HttpClientHandler>();
+        ((HttpClientHandler)options.BackchannelHttpHandler!).AllowAutoRedirect.ShouldBeFalse();
+    }
+
+    [Fact]
+    public void PostConfigure_leavesACallerSuppliedBackchannelHandlersRedirectBehaviorAlone()
+    {
+        var suppliedHandler = new HttpClientHandler { AllowAutoRedirect = true };
+        var services = new ServiceCollection();
+        services.AddDataProtection();
+        services
+            .AddAuthentication()
+            .AddCookie()
+            .AddOAuth10A(
+                "oauth10a",
+                options =>
+                {
+                    options.ClientCredentials = Credentials;
+                    options.Endpoints = Endpoints;
+                    options.CallbackPath = "/signin-oauth10a";
+                    options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                    options.BackchannelHttpHandler = suppliedHandler;
+                }
+            );
+
+        using var provider = services.BuildServiceProvider();
+        var options = provider
+            .GetRequiredService<IOptionsMonitor<OAuth10AOptions>>()
+            .Get("oauth10a");
+
+        options.BackchannelHttpHandler.ShouldBeSameAs(suppliedHandler);
+        suppliedHandler.AllowAutoRedirect.ShouldBeTrue();
     }
 }
