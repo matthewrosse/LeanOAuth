@@ -117,6 +117,45 @@ public class OAuthSigningHandlerTests
     }
 
     [Fact]
+    public async Task SendAsync_DisposesTheResponse_WhenThrowingOnAnUnexpectedRedirectResponse()
+    {
+        var content = new DisposeTrackingContent();
+        var stub = new StubHttpMessageHandler(
+            new HttpResponseMessage(HttpStatusCode.Found) { Content = content }
+        );
+        var handler = new OAuthSigningHandler(Credentials, signer: CreateSigner());
+        using var client = CreateClient(handler, stub);
+
+        await Should.ThrowAsync<InvalidOperationException>(
+            () => client.GetAsync(new Uri("http://example.com/resource"), Ct)
+        );
+
+        content.WasDisposed.ShouldBeTrue();
+    }
+
+    private sealed class DisposeTrackingContent : HttpContent
+    {
+        public bool WasDisposed { get; private set; }
+
+        protected override Task SerializeToStreamAsync(
+            Stream stream,
+            TransportContext? context
+        ) => Task.CompletedTask;
+
+        protected override bool TryComputeLength(out long length)
+        {
+            length = 0;
+            return true;
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            WasDisposed = true;
+            base.Dispose(disposing);
+        }
+    }
+
+    [Fact]
     public void Send_SynchronousSendIsNotSupported()
     {
         var stub = new StubHttpMessageHandler(new HttpResponseMessage(HttpStatusCode.OK));

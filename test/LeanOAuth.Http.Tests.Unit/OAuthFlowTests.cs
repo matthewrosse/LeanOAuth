@@ -201,6 +201,22 @@ public class OAuthFlowTests
     }
 
     [Fact]
+    public async Task RequestTemporaryCredentialsAsync_Throws_RequestFailedException_NamingRedirectAsCause_On3xx()
+    {
+        var response = new HttpResponseMessage(HttpStatusCode.Found);
+        response.Headers.Location = new Uri("http://example.com/oauth/request_token/");
+        var stub = new StubHttpMessageHandler(response);
+        var flow = CreateFlow(stub);
+
+        var exception = await Should.ThrowAsync<OAuthRequestFailedException>(
+            () => flow.RequestTemporaryCredentialsAsync(OAuthCallback.OutOfBand, Ct)
+        );
+
+        exception.StatusCode.ShouldBe(HttpStatusCode.Found);
+        exception.Message.ShouldContain("redirect");
+    }
+
+    [Fact]
     public void BuildAuthorizationUri_IncludesTheTemporaryToken()
     {
         var stub = new StubHttpMessageHandler(new HttpResponseMessage(HttpStatusCode.OK));
