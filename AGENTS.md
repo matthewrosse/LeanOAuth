@@ -22,7 +22,11 @@ Signing tests are pinned to the worked example in RFC 5849 §1.2 — consumer ke
 
 ## Before committing
 
-Run `dotnet csharpier .`. The repo is CSharpier-formatted and CI does not check formatting.
+A Husky.Net pre-commit hook runs `dotnet format` on staged `.cs` files automatically (`.husky/task-runner.json`); CI also runs `dotnet format --verify-no-changes` and fails the build if anything is unformatted.
+
+## Commits and PRs
+
+No `Co-Authored-By: Claude` or `Claude-Session:` trailers in commit messages or PR descriptions.
 
 ## Agent skills
 

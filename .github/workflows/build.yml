@@ -3,9 +3,9 @@ name: Build
 on:
   workflow_dispatch:
   push:
-    branches: [main]
+    branches: [main, v2]
   pull_request:
-    branches: [main]
+    branches: [main, v2]
 
 jobs:
   build:
@@ -21,6 +21,8 @@ jobs:
             10.0.x
       - name: Restore dependencies
         run: dotnet restore
+      - name: Verify formatting
+        run: dotnet format --verify-no-changes
       - name: Build
         run: dotnet build -c Release --no-restore
       - name: Test Debug
