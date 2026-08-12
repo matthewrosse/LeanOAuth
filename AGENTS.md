@@ -24,6 +24,10 @@ Signing tests are pinned to the worked example in RFC 5849 §1.2 — consumer ke
 
 Run `dotnet csharpier .`. The repo is CSharpier-formatted and CI does not check formatting.
 
+## Commits and PRs
+
+No `Co-Authored-By: Claude` or `Claude-Session:` trailers in commit messages or PR descriptions.
+
 ## Agent skills
 
 ### Issue tracker
