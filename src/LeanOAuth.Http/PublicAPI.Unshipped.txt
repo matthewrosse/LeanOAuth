@@ -1,1 +1,8 @@
 #nullable enable
+
+LeanOAuth.Http.HttpRequestMessageSigningExtensions
+LeanOAuth.Http.OAuthSigningHandler
+LeanOAuth.Http.OAuthSigningHandler.OAuthSigningHandler(LeanOAuth.Core.Credentials.ClientCredentials! clientCredentials, LeanOAuth.Core.OAuthToken? defaultToken = null, LeanOAuth.Core.OAuthSigner? signer = null) -> void
+static LeanOAuth.Http.HttpRequestMessageSigningExtensions.SignAsync(this System.Net.Http.HttpRequestMessage! request, LeanOAuth.Core.Credentials.ClientCredentials! clientCredentials, LeanOAuth.Core.OAuthToken? token, LeanOAuth.Core.OAuthSigner! signer, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+static LeanOAuth.Http.HttpRequestMessageSigningExtensions.WithOAuthToken(this System.Net.Http.HttpRequestMessage! request, LeanOAuth.Core.OAuthToken token) -> System.Net.Http.HttpRequestMessage!
+static LeanOAuth.Http.OAuthSigningHandler.TokenKey.get -> System.Net.Http.HttpRequestOptionsKey<LeanOAuth.Core.OAuthToken>

@@ -11,5 +11,6 @@
   </Folder>
   <Folder Name="/test/">
     <Project Path="test/LeanOAuth.Core.Tests.Unit/LeanOAuth.Core.Tests.Unit.csproj" />
+    <Project Path="test/LeanOAuth.Http.Tests.Unit/LeanOAuth.Http.Tests.Unit.csproj" />
   </Folder>
 </Solution>
