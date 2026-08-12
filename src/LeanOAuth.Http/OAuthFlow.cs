@@ -24,6 +24,7 @@ public sealed class OAuthFlow
     private readonly ClientCredentials _clientCredentials;
     private readonly OAuthSigner _signer;
     private readonly bool _allowUnconfirmedCallback;
+    private readonly string? _realm;
 
     /// <param name="httpClient">Used to call the provider's endpoints. Not owned; the caller disposes it.</param>
     /// <param name="endpoints">The provider's three endpoints.</param>
@@ -47,6 +48,7 @@ public sealed class OAuthFlow
         _clientCredentials = clientCredentials;
         _signer = signer ?? new OAuthSigner();
         _allowUnconfirmedCallback = options?.AllowUnconfirmedCallback ?? false;
+        _realm = options?.Realm;
     }
 
     /// <summary>
@@ -160,7 +162,8 @@ public sealed class OAuthFlow
             endpoint,
             _clientCredentials,
             token,
-            additionalParameters
+            additionalParameters,
+            _realm
         );
 
         using var request = new HttpRequestMessage(HttpMethod.Post, endpoint);

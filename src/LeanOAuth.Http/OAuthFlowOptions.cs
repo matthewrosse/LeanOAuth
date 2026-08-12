@@ -11,4 +11,10 @@ public sealed record OAuthFlowOptions
     /// and only once you have confirmed that provider is not vulnerable in some other way.
     /// </summary>
     public bool AllowUnconfirmedCallback { get; init; }
+
+    /// <summary>
+    /// The realm to include in the "Authorization" header of every request the flow sends.
+    /// Optional per RFC 5849 §3.5.1; omitted when null.
+    /// </summary>
+    public string? Realm { get; init; }
 }
