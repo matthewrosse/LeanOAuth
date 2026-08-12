@@ -72,15 +72,10 @@ public sealed class OAuthSigner
 
         var signature = ComputeSignature(clientCredentials, token, baseString);
 
-        var additionalOAuthParameters = extraParameters
+        var headerOAuthParameters = ExcludeQueryParameters(signedParameters, queryParameters)
             .Where(p => p.Key.StartsWith("oauth_", StringComparison.Ordinal))
             .ToList();
-        var header = BuildAuthorizationHeader(
-            protocolParameters,
-            additionalOAuthParameters,
-            signature,
-            realm
-        );
+        var header = BuildAuthorizationHeader(headerOAuthParameters, signature, realm);
 
         return new OAuthSignature(header, baseString, signedParameters);
     }
@@ -236,6 +231,34 @@ public sealed class OAuthSigner
         return parameters;
     }
 
+    /// <summary>
+    /// Removes query-string parameters from a post-hook parameter list, one-for-one, so query
+    /// parameters never surface in the Authorization header even when their key happens to start
+    /// with "oauth_". Parameters added or left untouched by the hook are unaffected.
+    /// </summary>
+    private static List<OAuthParameter> ExcludeQueryParameters(
+        IReadOnlyList<OAuthParameter> parameters,
+        IReadOnlyList<OAuthParameter> queryParameters
+    )
+    {
+        var remainingQueryParameters = new List<OAuthParameter>(queryParameters);
+        var result = new List<OAuthParameter>(parameters.Count);
+
+        foreach (var parameter in parameters)
+        {
+            var index = remainingQueryParameters.IndexOf(parameter);
+            if (index >= 0)
+            {
+                remainingQueryParameters.RemoveAt(index);
+                continue;
+            }
+
+            result.Add(parameter);
+        }
+
+        return result;
+    }
+
     private static string BuildNormalizedParameterString(IReadOnlyList<OAuthParameter> parameters)
     {
         var encoded = parameters
@@ -247,8 +270,7 @@ public sealed class OAuthSigner
     }
 
     private static string BuildAuthorizationHeader(
-        IReadOnlyList<OAuthParameter> protocolParameters,
-        IReadOnlyList<OAuthParameter> additionalOAuthParameters,
+        IReadOnlyList<OAuthParameter> oAuthParameters,
         string signature,
         string? realm
     )
@@ -262,7 +284,7 @@ public sealed class OAuthSigner
             isFirst = false;
         }
 
-        foreach (var parameter in protocolParameters.Concat(additionalOAuthParameters))
+        foreach (var parameter in oAuthParameters)
         {
             if (!isFirst)
             {
