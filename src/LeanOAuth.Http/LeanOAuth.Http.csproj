@@ -1,25 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>net8.0;net10.0</TargetFrameworks>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
         <IsAotCompatible>true</IsAotCompatible>
-        <Version>2.0.0</Version>
         <Title>LeanOAuth.Http</Title>
-        <Authors>matthewrosse</Authors>
         <Description>HttpRequestMessage signing, the signing DelegatingHandler, and the three-legged flow for LeanOAuth, an open source implementation of the OAuth1.0A RFC 5849 protocol in .NET. Part of LeanOAuth project.</Description>
-        <PackageProjectUrl>https://github.com/matthewrosse/LeanOAuth</PackageProjectUrl>
-        <RepositoryUrl>https://github.com/matthewrosse/LeanOAuth</RepositoryUrl>
-        <RepositoryType>git</RepositoryType>
         <PackageTags>oauth,oauth1.0a,auth,dotnet,http</PackageTags>
-        <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <EnablePackageValidation>true</EnablePackageValidation>
-        <GenerateDocumentationFile>True</GenerateDocumentationFile>
-        <NoWarn>$(NoWarn);CS1591</NoWarn>
-        <PackageOutputPath>../../artifacts/</PackageOutputPath>
-        <PackageReadmeFile>README.md</PackageReadmeFile>
-        <Deterministic>true</Deterministic>
     </PropertyGroup>
 
     <ItemGroup>
@@ -27,11 +12,11 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="DotNet.ReproducibleBuilds" Version="1.1.1">
+      <PackageReference Include="DotNet.ReproducibleBuilds">
         <PrivateAssets>all</PrivateAssets>
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       </PackageReference>
-      <PackageReference Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" Version="5.6.0">
+      <PackageReference Include="Microsoft.CodeAnalysis.PublicApiAnalyzers">
         <PrivateAssets>all</PrivateAssets>
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       </PackageReference>
@@ -40,11 +25,6 @@
     <ItemGroup>
         <AdditionalFiles Include="PublicAPI.Shipped.txt" />
         <AdditionalFiles Include="PublicAPI.Unshipped.txt" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <None Include="../../LICENSE" Pack="true" PackagePath="."/>
-        <None Include="../../README.md" Pack="true" PackagePath="."/>
     </ItemGroup>
 
 </Project>
