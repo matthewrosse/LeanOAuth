@@ -120,9 +120,54 @@ public sealed class OAuth10ASignInTests
         capturedRequestUri.Query.ShouldBe($"?scope={expected}");
     }
 
+    [Fact]
+    public async Task Callback_deletes_the_state_cookie_with_the_same_path_it_was_set_with()
+    {
+        using var backchannel = new HttpClient(
+            new StubHttpMessageHandler(request =>
+                request.RequestUri!.GetLeftPart(UriPartial.Path) == TemporaryCredentialRequest.ToString()
+                    ? FormResponse(
+                        "oauth_token=temp-token&oauth_token_secret=temp-secret&oauth_callback_confirmed=true"
+                    )
+                    : FormResponse("oauth_token=final-token&oauth_token_secret=final-secret")
+            )
+        );
+        using var host = await BuildHostAsync(backchannel, pathBase: "/app");
+        using var client = host.GetTestClient();
+
+        using var challengeResponse = await client.GetAsync(
+            "/app/login",
+            TestContext.Current.CancellationToken
+        );
+        var setCookieHeader = challengeResponse
+            .Headers.GetValues("Set-Cookie")
+            .Single(value => value.StartsWith("LeanOAuth.State.oauth10a=", StringComparison.Ordinal));
+        var setCookiePath = ExtractCookieAttribute(setCookieHeader, "path");
+        var stateCookie = ExtractCookie(challengeResponse, "LeanOAuth.State.oauth10a");
+
+        using var callbackRequest = new HttpRequestMessage(
+            HttpMethod.Get,
+            "/app/signin-oauth10a?oauth_token=temp-token&oauth_verifier=verifier-123"
+        );
+        callbackRequest.Headers.Add("Cookie", stateCookie);
+        using var callbackResponse = await client.SendAsync(
+            callbackRequest,
+            TestContext.Current.CancellationToken
+        );
+
+        var deleteCookieHeader = callbackResponse
+            .Headers.GetValues("Set-Cookie")
+            .Single(value => value.StartsWith("LeanOAuth.State.oauth10a=", StringComparison.Ordinal));
+        var deleteCookiePath = ExtractCookieAttribute(deleteCookieHeader, "path");
+
+        deleteCookiePath.ShouldBe(setCookiePath);
+        setCookiePath.ShouldBe("/app/signin-oauth10a");
+    }
+
     private static async Task<IHost> BuildHostAsync(
         HttpClient backchannel,
-        Action<OAuth10AOptions>? configure = null
+        Action<OAuth10AOptions>? configure = null,
+        string? pathBase = null
     ) =>
         await new HostBuilder()
             .ConfigureWebHost(webBuilder =>
@@ -169,6 +214,11 @@ public sealed class OAuth10ASignInTests
                     })
                     .Configure(app =>
                     {
+                        if (pathBase is not null)
+                        {
+                            app.UsePathBase(pathBase);
+                        }
+
                         app.UseAuthentication();
                         app.Run(async ctx =>
                         {
@@ -202,4 +252,12 @@ public sealed class OAuth10ASignInTests
             .Single(value => value.StartsWith(name + "=", StringComparison.Ordinal));
         return setCookie[..setCookie.IndexOf(';')];
     }
+
+    private static string? ExtractCookieAttribute(string setCookieHeader, string attributeName) =>
+        setCookieHeader
+            .Split(';')
+            .Select(part => part.Trim())
+            .Where(part => part.StartsWith(attributeName + "=", StringComparison.OrdinalIgnoreCase))
+            .Select(part => part[(attributeName.Length + 1)..])
+            .SingleOrDefault();
 }

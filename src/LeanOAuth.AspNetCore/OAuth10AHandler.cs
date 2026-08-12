@@ -91,7 +91,8 @@ public sealed class OAuth10AHandler(
     protected override async Task<HandleRequestResult> HandleRemoteAuthenticateAsync()
     {
         var stateCookie = Request.Cookies[StateCookieName];
-        Response.Cookies.Delete(StateCookieName);
+        var deleteCookieOptions = Options.CorrelationCookie.Build(Context, TimeProvider.System.GetUtcNow());
+        Response.Cookies.Delete(StateCookieName, deleteCookieOptions);
 
         if (string.IsNullOrEmpty(stateCookie))
         {
