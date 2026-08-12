@@ -5,6 +5,7 @@ namespace LeanOAuth.Http;
 /// <summary>An OAuth endpoint returned a non-success HTTP status.</summary>
 public sealed class OAuthRequestFailedException : OAuthException
 {
+    /// <summary>Creates the exception from the provider's non-success status and response excerpt.</summary>
     public OAuthRequestFailedException(HttpStatusCode statusCode, string? responseExcerpt)
         : base($"The OAuth endpoint returned {(int)statusCode} {statusCode}.")
     {

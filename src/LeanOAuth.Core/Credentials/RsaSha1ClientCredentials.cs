@@ -3,11 +3,15 @@ using System.Security.Cryptography;
 namespace LeanOAuth.Core.Credentials;
 
 /// <summary>
-/// Client credentials that sign RSA-SHA1. Holds an RSA private key instead of a shared secret.
+/// Client credentials that sign RSA-SHA1. Holds an RSA private key instead of a shared secret
+/// ("consumer secret" in OAuth 1.0 Core), the configuration RSA-SHA1 providers commonly require.
 /// The library never parses, loads, or disposes the key; the caller owns its lifetime.
 /// </summary>
 public sealed record RsaSha1ClientCredentials : ClientCredentials
 {
+    /// <summary>Creates RSA-SHA1 client credentials from the consumer key and private key.</summary>
+    /// <param name="consumerKey">The client identifier, called "consumer key" in OAuth 1.0 Core.</param>
+    /// <param name="privateKey">The RSA private key used to sign requests. Ownership stays with the caller.</param>
     public RsaSha1ClientCredentials(string consumerKey, RSA privateKey)
         : base(consumerKey)
     {

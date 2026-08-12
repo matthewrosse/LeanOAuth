@@ -38,6 +38,7 @@ public sealed class OAuthSigningHandler : DelegatingHandler
     public static HttpRequestOptionsKey<OAuthToken> TokenKey { get; } =
         new("LeanOAuth.Http.OAuthSigningHandler.Token");
 
+    /// <summary>Creates a handler that signs every outbound request with <paramref name="clientCredentials"/>.</summary>
     /// <param name="clientCredentials">The client credentials every request is signed with.</param>
     /// <param name="defaultToken">
     /// The token credential used when a request carries no per-request override set via

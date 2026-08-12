@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFrameworks></TargetFrameworks>
+        <TargetFramework>net10.0</TargetFramework>
+        <IsPackable>false</IsPackable>
+        <RootNamespace>LeanOAuth.Samples.AspNetCore</RootNamespace>
+        <UserSecretsId>LeanOAuth.Samples.AspNetCore</UserSecretsId>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\src\LeanOAuth.AspNetCore\LeanOAuth.AspNetCore.csproj" />
+    </ItemGroup>
+
+</Project>

@@ -14,4 +14,8 @@
     <Project Path="test/LeanOAuth.Core.Tests.Unit/LeanOAuth.Core.Tests.Unit.csproj" />
     <Project Path="test/LeanOAuth.Http.Tests.Unit/LeanOAuth.Http.Tests.Unit.csproj" />
   </Folder>
+  <Folder Name="/samples/">
+    <Project Path="samples/LeanOAuth.Samples.AspNetCore/LeanOAuth.Samples.AspNetCore.csproj" />
+    <Project Path="samples/LeanOAuth.Samples.Console/LeanOAuth.Samples.Console.csproj" />
+  </Folder>
 </Solution>

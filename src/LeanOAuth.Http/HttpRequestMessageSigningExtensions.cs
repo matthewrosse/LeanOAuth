@@ -17,6 +17,11 @@ public static class HttpRequestMessageSigningExtensions
     /// so it remains readable and sendable afterwards; a body of any other content type is left
     /// unread and unbuffered.
     /// </summary>
+    /// <param name="request">The request to sign, in place.</param>
+    /// <param name="clientCredentials">The client credentials; their type determines the signature method.</param>
+    /// <param name="token">The temporary or token credentials, or null when none are held yet.</param>
+    /// <param name="signer">The signer to sign with.</param>
+    /// <param name="cancellationToken">A token to cancel reading the request body.</param>
     /// <exception cref="InvalidOperationException">
     /// <paramref name="request"/> has no <see cref="HttpRequestMessage.RequestUri"/>, or already
     /// carries an "Authorization" header.
@@ -66,6 +71,9 @@ public static class HttpRequestMessageSigningExtensions
     /// Overrides the token credential <see cref="OAuthSigningHandler"/> signs this request with,
     /// for callers holding one token per user that cannot mint an <see cref="HttpClient"/> per user.
     /// </summary>
+    /// <param name="request">The request to attach the override to.</param>
+    /// <param name="token">The token credentials to sign this request with.</param>
+    /// <returns><paramref name="request"/>, for chaining.</returns>
     public static HttpRequestMessage WithOAuthToken(this HttpRequestMessage request, OAuthToken token)
     {
         ArgumentNullException.ThrowIfNull(request);

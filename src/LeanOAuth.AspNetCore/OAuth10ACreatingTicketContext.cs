@@ -15,6 +15,7 @@ namespace LeanOAuth.AspNetCore;
 /// </summary>
 public sealed class OAuth10ACreatingTicketContext : ResultContext<OAuth10AOptions>
 {
+    /// <summary>Creates the context passed to <see cref="OAuth10AEvents.OnCreatingTicket"/>.</summary>
     public OAuth10ACreatingTicketContext(
         HttpContext context,
         AuthenticationScheme scheme,

@@ -1,1 +1,92 @@
 #nullable enable
+LeanOAuth.Http.HttpRequestMessageSigningExtensions
+LeanOAuth.Http.OAuthSigningHandler
+LeanOAuth.Http.OAuthSigningHandler.OAuthSigningHandler(LeanOAuth.Core.Credentials.ClientCredentials! clientCredentials, LeanOAuth.Core.OAuthToken? defaultToken = null, LeanOAuth.Core.OAuthSigner? signer = null) -> void
+static LeanOAuth.Http.HttpRequestMessageSigningExtensions.SignAsync(this System.Net.Http.HttpRequestMessage! request, LeanOAuth.Core.Credentials.ClientCredentials! clientCredentials, LeanOAuth.Core.OAuthToken? token, LeanOAuth.Core.OAuthSigner! signer, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+static LeanOAuth.Http.HttpRequestMessageSigningExtensions.WithOAuthToken(this System.Net.Http.HttpRequestMessage! request, LeanOAuth.Core.OAuthToken token) -> System.Net.Http.HttpRequestMessage!
+static LeanOAuth.Http.OAuthSigningHandler.TokenKey.get -> System.Net.Http.HttpRequestOptionsKey<LeanOAuth.Core.OAuthToken>
+abstract LeanOAuth.Http.OAuthCallback.<Clone>$() -> LeanOAuth.Http.OAuthCallback!
+LeanOAuth.Http.OAuthCallback
+LeanOAuth.Http.OAuthCallback.OAuthCallback(LeanOAuth.Http.OAuthCallback! original) -> void
+LeanOAuth.Http.OAuthFlow.BuildAuthorizationUri(LeanOAuth.Http.TemporaryCredentials! temporaryCredentials) -> System.Uri!
+LeanOAuth.Http.OAuthFlow.ExchangeAsync(LeanOAuth.Http.TemporaryCredentials! temporaryCredentials, string! verifier, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<LeanOAuth.Http.TokenCredentials!>!
+LeanOAuth.Http.OAuthFlow.OAuthFlow(System.Net.Http.HttpClient! httpClient, LeanOAuth.Http.OAuthProviderEndpoints! endpoints, LeanOAuth.Core.Credentials.ClientCredentials! clientCredentials, LeanOAuth.Core.OAuthSigner? signer = null, LeanOAuth.Http.OAuthFlowOptions? options = null) -> void
+LeanOAuth.Http.OAuthFlow.RequestTemporaryCredentialsAsync(LeanOAuth.Http.OAuthCallback! callback, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<LeanOAuth.Http.TemporaryCredentials!>!
+LeanOAuth.Http.OAuthFlowOptions.<Clone>$() -> LeanOAuth.Http.OAuthFlowOptions!
+LeanOAuth.Http.OAuthFlowOptions.AllowUnconfirmedCallback.get -> bool
+LeanOAuth.Http.OAuthFlowOptions.AllowUnconfirmedCallback.init -> void
+LeanOAuth.Http.OAuthFlowOptions.Equals(LeanOAuth.Http.OAuthFlowOptions? other) -> bool
+LeanOAuth.Http.OAuthFlowOptions.OAuthFlowOptions() -> void
+LeanOAuth.Http.OAuthFlowOptions.Realm.get -> string?
+LeanOAuth.Http.OAuthFlowOptions.Realm.init -> void
+LeanOAuth.Http.OAuthProtocolException.OAuthProtocolException(string! message, System.Exception! innerException) -> void
+LeanOAuth.Http.OAuthProtocolException.OAuthProtocolException(string! message) -> void
+LeanOAuth.Http.OAuthProviderEndpoints
+LeanOAuth.Http.OAuthProviderEndpoints.<Clone>$() -> LeanOAuth.Http.OAuthProviderEndpoints!
+LeanOAuth.Http.OAuthProviderEndpoints.Deconstruct(out System.Uri! TemporaryCredentialRequest, out System.Uri! ResourceOwnerAuthorization, out System.Uri! TokenRequest) -> void
+LeanOAuth.Http.OAuthProviderEndpoints.Equals(LeanOAuth.Http.OAuthProviderEndpoints? other) -> bool
+LeanOAuth.Http.OAuthProviderEndpoints.OAuthProviderEndpoints(System.Uri! TemporaryCredentialRequest, System.Uri! ResourceOwnerAuthorization, System.Uri! TokenRequest) -> void
+LeanOAuth.Http.OAuthProviderEndpoints.ResourceOwnerAuthorization.get -> System.Uri!
+LeanOAuth.Http.OAuthProviderEndpoints.ResourceOwnerAuthorization.init -> void
+LeanOAuth.Http.OAuthProviderEndpoints.TemporaryCredentialRequest.get -> System.Uri!
+LeanOAuth.Http.OAuthProviderEndpoints.TemporaryCredentialRequest.init -> void
+LeanOAuth.Http.OAuthProviderEndpoints.TokenRequest.get -> System.Uri!
+LeanOAuth.Http.OAuthProviderEndpoints.TokenRequest.init -> void
+LeanOAuth.Http.OAuthRequestFailedException.OAuthRequestFailedException(System.Net.HttpStatusCode statusCode, string? responseExcerpt) -> void
+LeanOAuth.Http.OAuthRequestFailedException.ResponseExcerpt.get -> string?
+LeanOAuth.Http.OAuthRequestFailedException.StatusCode.get -> System.Net.HttpStatusCode
+LeanOAuth.Http.TemporaryCredentials
+LeanOAuth.Http.TemporaryCredentials.<Clone>$() -> LeanOAuth.Http.TemporaryCredentials!
+LeanOAuth.Http.TemporaryCredentials.CallbackConfirmed.get -> bool
+LeanOAuth.Http.TemporaryCredentials.CallbackConfirmed.init -> void
+LeanOAuth.Http.TemporaryCredentials.Deconstruct(out string! Token, out string! TokenSecret, out bool CallbackConfirmed) -> void
+LeanOAuth.Http.TemporaryCredentials.Equals(LeanOAuth.Http.TemporaryCredentials? other) -> bool
+LeanOAuth.Http.TemporaryCredentials.TemporaryCredentials(string! Token, string! TokenSecret, bool CallbackConfirmed) -> void
+LeanOAuth.Http.TemporaryCredentials.Token.get -> string!
+LeanOAuth.Http.TemporaryCredentials.Token.init -> void
+LeanOAuth.Http.TemporaryCredentials.TokenSecret.get -> string!
+LeanOAuth.Http.TemporaryCredentials.TokenSecret.init -> void
+LeanOAuth.Http.TokenCredentials
+LeanOAuth.Http.TokenCredentials.<Clone>$() -> LeanOAuth.Http.TokenCredentials!
+LeanOAuth.Http.TokenCredentials.Deconstruct(out string! Token, out string! TokenSecret) -> void
+LeanOAuth.Http.TokenCredentials.Equals(LeanOAuth.Http.TokenCredentials? other) -> bool
+LeanOAuth.Http.TokenCredentials.Token.get -> string!
+LeanOAuth.Http.TokenCredentials.Token.init -> void
+LeanOAuth.Http.TokenCredentials.TokenCredentials(string! Token, string! TokenSecret) -> void
+LeanOAuth.Http.TokenCredentials.TokenSecret.get -> string!
+LeanOAuth.Http.TokenCredentials.TokenSecret.init -> void
+override LeanOAuth.Http.OAuthCallback.Equals(object? obj) -> bool
+override LeanOAuth.Http.OAuthCallback.GetHashCode() -> int
+override LeanOAuth.Http.OAuthCallback.ToString() -> string!
+override LeanOAuth.Http.OAuthFlowOptions.Equals(object? obj) -> bool
+override LeanOAuth.Http.OAuthFlowOptions.GetHashCode() -> int
+override LeanOAuth.Http.OAuthProviderEndpoints.Equals(object? obj) -> bool
+override LeanOAuth.Http.OAuthProviderEndpoints.GetHashCode() -> int
+override LeanOAuth.Http.OAuthProviderEndpoints.ToString() -> string!
+override LeanOAuth.Http.TemporaryCredentials.Equals(object? obj) -> bool
+override LeanOAuth.Http.TemporaryCredentials.GetHashCode() -> int
+override LeanOAuth.Http.TemporaryCredentials.ToString() -> string!
+override LeanOAuth.Http.TokenCredentials.Equals(object? obj) -> bool
+override LeanOAuth.Http.TokenCredentials.GetHashCode() -> int
+override LeanOAuth.Http.TokenCredentials.ToString() -> string!
+static LeanOAuth.Http.OAuthCallback.For(System.Uri! uri) -> LeanOAuth.Http.OAuthCallback!
+static LeanOAuth.Http.OAuthCallback.operator !=(LeanOAuth.Http.OAuthCallback? left, LeanOAuth.Http.OAuthCallback? right) -> bool
+static LeanOAuth.Http.OAuthCallback.operator ==(LeanOAuth.Http.OAuthCallback? left, LeanOAuth.Http.OAuthCallback? right) -> bool
+static LeanOAuth.Http.OAuthCallback.OutOfBand.get -> LeanOAuth.Http.OAuthCallback!
+static LeanOAuth.Http.OAuthFlowOptions.operator ==(LeanOAuth.Http.OAuthFlowOptions? left, LeanOAuth.Http.OAuthFlowOptions? right) -> bool
+static LeanOAuth.Http.OAuthProviderEndpoints.operator !=(LeanOAuth.Http.OAuthProviderEndpoints? left, LeanOAuth.Http.OAuthProviderEndpoints? right) -> bool
+static LeanOAuth.Http.OAuthProviderEndpoints.operator ==(LeanOAuth.Http.OAuthProviderEndpoints? left, LeanOAuth.Http.OAuthProviderEndpoints? right) -> bool
+static LeanOAuth.Http.TemporaryCredentials.operator !=(LeanOAuth.Http.TemporaryCredentials? left, LeanOAuth.Http.TemporaryCredentials? right) -> bool
+static LeanOAuth.Http.TemporaryCredentials.operator ==(LeanOAuth.Http.TemporaryCredentials? left, LeanOAuth.Http.TemporaryCredentials? right) -> bool
+static LeanOAuth.Http.TokenCredentials.operator !=(LeanOAuth.Http.TokenCredentials? left, LeanOAuth.Http.TokenCredentials? right) -> bool
+static LeanOAuth.Http.TokenCredentials.operator ==(LeanOAuth.Http.TokenCredentials? left, LeanOAuth.Http.TokenCredentials? right) -> bool
+virtual LeanOAuth.Http.OAuthCallback.EqualityContract.get -> System.Type!
+virtual LeanOAuth.Http.OAuthCallback.Equals(LeanOAuth.Http.OAuthCallback? other) -> bool
+virtual LeanOAuth.Http.OAuthCallback.PrintMembers(System.Text.StringBuilder! builder) -> bool
+LeanOAuth.Http.OAuthException
+LeanOAuth.Http.OAuthFlow
+LeanOAuth.Http.OAuthFlowOptions
+LeanOAuth.Http.OAuthProtocolException
+LeanOAuth.Http.OAuthRequestFailedException
+override LeanOAuth.Http.OAuthFlowOptions.ToString() -> string!
+static LeanOAuth.Http.OAuthFlowOptions.operator !=(LeanOAuth.Http.OAuthFlowOptions? left, LeanOAuth.Http.OAuthFlowOptions? right) -> bool

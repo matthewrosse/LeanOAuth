@@ -10,6 +10,7 @@ namespace LeanOAuth.AspNetCore;
 /// </summary>
 public sealed class OAuth10AOptions : RemoteAuthenticationOptions
 {
+    /// <summary>Creates the options with the default <see cref="OAuth10AEvents"/>.</summary>
     public OAuth10AOptions()
     {
         base.Events = new OAuth10AEvents();
