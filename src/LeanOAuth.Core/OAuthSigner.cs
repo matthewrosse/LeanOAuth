@@ -15,9 +15,12 @@ public sealed class OAuthSigner
 {
     private readonly OAuthSigningOptions _options;
 
+    /// <summary>Creates a signer with default options.</summary>
     public OAuthSigner()
         : this(new OAuthSigningOptions()) { }
 
+    /// <summary>Creates a signer with the given options.</summary>
+    /// <param name="options">The nonce generator, clock, and parameter hook to sign with.</param>
     public OAuthSigner(OAuthSigningOptions options)
     {
         ArgumentNullException.ThrowIfNull(options);

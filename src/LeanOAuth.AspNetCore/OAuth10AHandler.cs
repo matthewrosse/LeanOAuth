@@ -13,6 +13,9 @@ namespace LeanOAuth.AspNetCore;
 /// of <see cref="OAuthFlow"/> and the credential and token types below it: nothing here reaches
 /// into an internal of a lower layer.
 /// </summary>
+/// <param name="options">The handler's options, monitored for changes.</param>
+/// <param name="logger">The logger factory used to create the handler's logger.</param>
+/// <param name="encoder">The URL encoder used when building redirect URIs.</param>
 public sealed class OAuth10AHandler(
     IOptionsMonitor<OAuth10AOptions> options,
     ILoggerFactory logger,

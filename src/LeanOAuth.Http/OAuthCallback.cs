@@ -14,6 +14,8 @@ public abstract record OAuthCallback
     public static OAuthCallback OutOfBand { get; } = new OutOfBandCallback();
 
     /// <summary>The provider redirects the resource owner to <paramref name="uri"/> with the verifier attached.</summary>
+    /// <param name="uri">The URI the provider redirects the resource owner to after authorization.</param>
+    /// <returns>A callback carrying <paramref name="uri"/>.</returns>
     public static OAuthCallback For(Uri uri)
     {
         ArgumentNullException.ThrowIfNull(uri);

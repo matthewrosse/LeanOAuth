@@ -6,9 +6,11 @@ namespace LeanOAuth.Http;
 /// </summary>
 public sealed class OAuthProtocolException : OAuthException
 {
+    /// <summary>Creates the exception with the given message.</summary>
     public OAuthProtocolException(string message)
         : base(message) { }
 
+    /// <summary>Creates the exception with the given message and inner exception.</summary>
     public OAuthProtocolException(string message, Exception innerException)
         : base(message, innerException) { }
 }

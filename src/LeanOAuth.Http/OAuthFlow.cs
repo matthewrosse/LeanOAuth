@@ -26,6 +26,7 @@ public sealed class OAuthFlow
     private readonly bool _allowUnconfirmedCallback;
     private readonly string? _realm;
 
+    /// <summary>Creates a flow for one provider, signing every request with <paramref name="clientCredentials"/>.</summary>
     /// <param name="httpClient">Used to call the provider's endpoints. Not owned; the caller disposes it.</param>
     /// <param name="endpoints">The provider's three endpoints.</param>
     /// <param name="clientCredentials">The client credentials every request in the flow is signed with.</param>
@@ -54,6 +55,9 @@ public sealed class OAuthFlow
     /// <summary>
     /// Requests temporary credentials from <see cref="OAuthProviderEndpoints.TemporaryCredentialRequest"/>.
     /// </summary>
+    /// <param name="callback">Where the provider sends the resource owner after authorization, or out-of-band.</param>
+    /// <param name="cancellationToken">A token to cancel the request.</param>
+    /// <returns>The temporary credentials, called a "request token" in most provider documentation.</returns>
     /// <exception cref="OAuthProtocolException">
     /// The response is missing "oauth_token" or "oauth_token_secret"; or the provider did not
     /// confirm the callback and <see cref="OAuthFlowOptions.AllowUnconfirmedCallback"/> is false.
@@ -85,6 +89,8 @@ public sealed class OAuthFlow
     /// Builds the URI the resource owner is sent to, carrying <paramref name="temporaryCredentials"/>'s
     /// token in "oauth_token".
     /// </summary>
+    /// <param name="temporaryCredentials">The temporary credentials obtained from <see cref="RequestTemporaryCredentialsAsync"/>.</param>
+    /// <returns>The URI to send the resource owner to.</returns>
     public Uri BuildAuthorizationUri(TemporaryCredentials temporaryCredentials)
     {
         ArgumentNullException.ThrowIfNull(temporaryCredentials);
@@ -101,6 +107,10 @@ public sealed class OAuthFlow
     /// Exchanges <paramref name="temporaryCredentials"/> and the verifier the provider returned
     /// for token credentials, via <see cref="OAuthProviderEndpoints.TokenRequest"/>.
     /// </summary>
+    /// <param name="temporaryCredentials">The authorized temporary credentials.</param>
+    /// <param name="verifier">The verifier the provider returned after the resource owner authorized.</param>
+    /// <param name="cancellationToken">A token to cancel the request.</param>
+    /// <returns>The token credentials, called an "access token" in most provider documentation.</returns>
     /// <exception cref="OAuthProtocolException">The response is missing "oauth_token" or "oauth_token_secret".</exception>
     /// <exception cref="OAuthRequestFailedException">The endpoint returned a non-success status.</exception>
     public async Task<TokenCredentials> ExchangeAsync(
