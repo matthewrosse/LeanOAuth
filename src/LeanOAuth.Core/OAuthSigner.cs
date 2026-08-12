@@ -67,9 +67,7 @@ public sealed class OAuthSigner
         var baseString =
             $"{method.Method.ToUpperInvariant()}&{PercentEncoder.Encode(normalizedUri)}&{PercentEncoder.Encode(normalizedParameterString)}";
 
-        var signature = Convert.ToBase64String(
-            ComputeSignature(clientCredentials, token, baseString)
-        );
+        var signature = ComputeSignature(clientCredentials, token, baseString);
 
         var additionalOAuthParameters = extraParameters
             .Where(p => p.Key.StartsWith("oauth_", StringComparison.Ordinal))
@@ -123,17 +121,21 @@ public sealed class OAuthSigner
                 ),
         };
 
-    private static byte[] ComputeSignature(
+    private static string ComputeSignature(
         ClientCredentials credentials,
         OAuthToken? token,
         string baseString
     ) =>
         credentials switch
         {
-            HmacSha1ClientCredentials hmac => ComputeHmacSha1Signature(hmac, token, baseString),
+            HmacSha1ClientCredentials hmac
+                => Convert.ToBase64String(ComputeHmacSha1Signature(hmac, token, baseString)),
+            RsaSha1ClientCredentials rsa
+                => Convert.ToBase64String(rsa.Sign(Encoding.UTF8.GetBytes(baseString))),
+            PlainTextClientCredentials plainText => ComputePlainTextSignature(plainText, token),
             _
                 => throw new NotSupportedException(
-                    $"Signing with '{credentials.GetType().Name}' is not yet supported."
+                    $"Unsupported client credentials type '{credentials.GetType()}'."
                 ),
         };
 
@@ -144,12 +146,19 @@ public sealed class OAuthSigner
         string baseString
     )
     {
-        var key =
-            $"{PercentEncoder.Encode(credentials.ConsumerSecret)}&{PercentEncoder.Encode(token?.TokenSecret ?? string.Empty)}";
+        var key = BuildSharedSecretKey(credentials.ConsumerSecret, token);
         using var hmac = new HMACSHA1(Encoding.UTF8.GetBytes(key));
         return hmac.ComputeHash(Encoding.UTF8.GetBytes(baseString));
     }
 #pragma warning restore CA5350
+
+    private static string ComputePlainTextSignature(
+        PlainTextClientCredentials credentials,
+        OAuthToken? token
+    ) => BuildSharedSecretKey(credentials.ConsumerSecret, token);
+
+    private static string BuildSharedSecretKey(string consumerSecret, OAuthToken? token) =>
+        $"{PercentEncoder.Encode(consumerSecret)}&{PercentEncoder.Encode(token?.TokenSecret ?? string.Empty)}";
 
     private static (string NormalizedUri, List<OAuthParameter> QueryParameters) NormalizeUri(
         Uri requestUri

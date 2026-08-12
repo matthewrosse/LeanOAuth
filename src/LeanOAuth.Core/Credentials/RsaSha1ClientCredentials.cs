@@ -4,8 +4,7 @@ namespace LeanOAuth.Core.Credentials;
 
 /// <summary>
 /// Client credentials that sign RSA-SHA1. Holds an RSA private key instead of a shared secret.
-/// Signing with this credential type is not yet implemented; it exists so the credential
-/// hierarchy is closed in its full shape.
+/// The library never parses, loads, or disposes the key; the caller owns its lifetime.
 /// </summary>
 public sealed record RsaSha1ClientCredentials : ClientCredentials
 {
@@ -18,4 +17,20 @@ public sealed record RsaSha1ClientCredentials : ClientCredentials
 
     /// <summary>The RSA private key used to sign requests.</summary>
     public RSA PrivateKey { get; }
+
+    /// <summary>
+    /// Signs <paramref name="data"/> with <see cref="PrivateKey"/> using SHA1 and PKCS#1 v1.5
+    /// padding, per RFC 5849 §3.4.3. Locked on <see cref="PrivateKey"/> itself, not a static,
+    /// because the runtime's <see cref="RSA"/> implementations are not contractually
+    /// thread-safe for concurrent signing: two credentials holding different keys never
+    /// contend, and only concurrent signing through the same key serializes -- even if that
+    /// key is wrapped by more than one credential instance.
+    /// </summary>
+    internal byte[] Sign(byte[] data)
+    {
+        lock (PrivateKey)
+        {
+            return PrivateKey.SignData(data, HashAlgorithmName.SHA1, RSASignaturePadding.Pkcs1);
+        }
+    }
 }
