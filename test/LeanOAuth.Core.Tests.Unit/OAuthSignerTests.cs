@@ -50,6 +50,76 @@ public class OAuthSignerTests
     }
 
     [Fact]
+    public void Sign_WhenHookRemovesAnOAuthParameter_OmitsItFromTheHeader()
+    {
+        var signer = CreateSigner(parameters =>
+            [.. parameters.Where(p => p.Key != "oauth_version")]
+        );
+
+        var result = signer.Sign(
+            HttpMethod.Get,
+            new Uri("http://example.com/resource"),
+            Credentials
+        );
+
+        result.AuthorizationHeaderValue.ShouldNotContain("oauth_version");
+        result.SignatureBaseString.ShouldNotContain("oauth_version");
+    }
+
+    [Fact]
+    public void Sign_WhenHookAddsAnOAuthPrefixedParameter_IncludesItInTheHeader()
+    {
+        var signer = CreateSigner(parameters =>
+            [.. parameters, new OAuthParameter("oauth_body_hash", "abc123")]
+        );
+
+        var result = signer.Sign(
+            HttpMethod.Get,
+            new Uri("http://example.com/resource"),
+            Credentials
+        );
+
+        result.AuthorizationHeaderValue.ShouldContain("oauth_body_hash=\"abc123\"");
+        result.SignatureBaseString.ShouldContain("oauth_body_hash%3Dabc123");
+    }
+
+    [Fact]
+    public void Sign_WhenHookAddsANonOAuthParameter_ContributesToBaseStringOnly()
+    {
+        var signer = CreateSigner(parameters =>
+            [.. parameters, new OAuthParameter("hooked", "value")]
+        );
+
+        var result = signer.Sign(
+            HttpMethod.Get,
+            new Uri("http://example.com/resource"),
+            Credentials
+        );
+
+        result.SignatureBaseString.ShouldContain("hooked%3Dvalue");
+        result.AuthorizationHeaderValue.ShouldNotContain("hooked");
+    }
+
+    [Fact]
+    public void Sign_DoesNotLeakQueryStringParametersIntoTheHeaderEvenWhenOAuthPrefixed()
+    {
+        var signer = CreateSigner();
+
+        var result = signer.Sign(
+            HttpMethod.Get,
+            new Uri("http://example.com/resource?oauth_version=zzz-query"),
+            Credentials
+        );
+
+        result.AuthorizationHeaderValue.ShouldContain("oauth_version=\"1.0\"");
+        result.AuthorizationHeaderValue.ShouldNotContain("zzz-query");
+        var oauthVersionOccurrences = result
+            .AuthorizationHeaderValue.Split("oauth_version=")
+            .Length - 1;
+        oauthVersionOccurrences.ShouldBe(1);
+    }
+
+    [Fact]
     public void Sign_EncodesParametersBeforeSorting()
     {
         var signer = CreateSigner();
