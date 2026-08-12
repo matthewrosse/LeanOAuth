@@ -1,13 +1,14 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
+        <TargetFrameworks>net8.0;net10.0</TargetFrameworks>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <Version>1.0.1</Version>
+        <IsAotCompatible>true</IsAotCompatible>
+        <Version>2.0.0</Version>
         <Title>LeanOAuth.Core</Title>
         <Authors>matthewrosse</Authors>
-        <Description>The core package of LeanOAuth, an open source implementation of the OAuth1.0A RFC 5849 protocol in .NET. Part of LeanOAuth project.</Description>
+        <Description>The protocol core of LeanOAuth: credentials, signing, normalization. No HTTP, no framework dependency. Part of LeanOAuth project.</Description>
         <PackageProjectUrl>https://github.com/matthewrosse/LeanOAuth</PackageProjectUrl>
         <RepositoryUrl>https://github.com/matthewrosse/LeanOAuth</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
@@ -18,6 +19,7 @@
         <NoWarn>$(NoWarn);CS1591</NoWarn>
         <PackageOutputPath>../../artifacts/</PackageOutputPath>
         <PackageReadmeFile>README.md</PackageReadmeFile>
+        <Deterministic>true</Deterministic>
     </PropertyGroup>
 
     <ItemGroup>
@@ -25,11 +27,20 @@
         <PrivateAssets>all</PrivateAssets>
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       </PackageReference>
+      <PackageReference Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" Version="5.6.0">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
+    </ItemGroup>
+
+    <ItemGroup>
+        <AdditionalFiles Include="PublicAPI.Shipped.txt" />
+        <AdditionalFiles Include="PublicAPI.Unshipped.txt" />
     </ItemGroup>
 
     <ItemGroup>
         <None Include="../../LICENSE" Pack="true" PackagePath="."/>
         <None Include="../../README.md" Pack="true" PackagePath="."/>
-    </ItemGroup> 
+    </ItemGroup>
 
 </Project>

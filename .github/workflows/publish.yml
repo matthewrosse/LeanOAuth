@@ -15,14 +15,16 @@ jobs:
       - name: Setup dotnet
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x'
-      
+          dotnet-version: |
+            8.0.x
+            10.0.x
+
       # Publish
       - name: Package
         run: dotnet pack -c Release src/LeanOAuth.Core/LeanOAuth.Core.csproj
       - name: Package
-        run: dotnet pack -c Release src/LeanOAuth.AspNetCore/LeanOAuth.AspNetCore.csproj
+        run: dotnet pack -c Release src/LeanOAuth.Http/LeanOAuth.Http.csproj
       - name: Package
-        run: dotnet pack -c Release src/LeanOAuth.AspNetCore.DependencyInjection/LeanOAuth.AspNetCore.DependencyInjection.csproj
+        run: dotnet pack -c Release src/LeanOAuth.AspNetCore/LeanOAuth.AspNetCore.csproj
       - name: Publish
         run: dotnet nuget push ./artifacts/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate

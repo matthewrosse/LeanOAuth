@@ -4,14 +4,15 @@
         <TargetFrameworks>net8.0;net10.0</TargetFrameworks>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <Title>LeanOAuth.AspNetCore</Title>
-        <Authors>matthewrosse</Authors>
-        <Description>ASP.NET Core sign-in handler and dependency injection extensions for LeanOAuth, an open source implementation of the OAuth1.0A RFC 5849 protocol in .NET. Part of LeanOAuth project.</Description>
-        <PackageProjectUrl>https://github.com/matthewrosse/LeanOAuth</PackageProjectUrl>
+        <IsAotCompatible>true</IsAotCompatible>
         <Version>2.0.0</Version>
+        <Title>LeanOAuth.Http</Title>
+        <Authors>matthewrosse</Authors>
+        <Description>HttpRequestMessage signing, the signing DelegatingHandler, and the three-legged flow for LeanOAuth, an open source implementation of the OAuth1.0A RFC 5849 protocol in .NET. Part of LeanOAuth project.</Description>
+        <PackageProjectUrl>https://github.com/matthewrosse/LeanOAuth</PackageProjectUrl>
         <RepositoryUrl>https://github.com/matthewrosse/LeanOAuth</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
-        <PackageTags>oauth,oauth1.0a,auth,dotnet,aspnetcore</PackageTags>
+        <PackageTags>oauth,oauth1.0a,auth,dotnet,http</PackageTags>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <EnablePackageValidation>true</EnablePackageValidation>
         <GenerateDocumentationFile>True</GenerateDocumentationFile>
@@ -22,11 +23,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\LeanOAuth.Http\LeanOAuth.Http.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <FrameworkReference Include="Microsoft.AspNetCore.App" />
+      <ProjectReference Include="..\LeanOAuth.Core\LeanOAuth.Core.csproj" />
     </ItemGroup>
 
     <ItemGroup>
@@ -49,4 +46,5 @@
         <None Include="../../LICENSE" Pack="true" PackagePath="."/>
         <None Include="../../README.md" Pack="true" PackagePath="."/>
     </ItemGroup>
+
 </Project>
