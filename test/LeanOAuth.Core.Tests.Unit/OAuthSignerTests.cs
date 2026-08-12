@@ -324,6 +324,42 @@ public class OAuthSignerTests
     }
 
     [Fact]
+    public void Sign_DecodesLiteralPlusInQueryValueAsSpace()
+    {
+        var signer = CreateSigner();
+
+        var result = signer.Sign(
+            HttpMethod.Get,
+            new Uri("http://example.com/resource?tag=hello+world"),
+            Credentials
+        );
+
+        result.Parameters.ShouldContain(p => p.Key == "tag" && p.Value == "hello world");
+    }
+
+    [Fact]
+    public void Sign_QueryAndFormBodyDecodeTheSameKeyValueIdentically()
+    {
+        var signer = CreateSigner();
+
+        var fromQuery = signer.Sign(
+            HttpMethod.Get,
+            new Uri("http://example.com/resource?tag=hello+world"),
+            Credentials
+        );
+        var fromBody = signer.Sign(
+            HttpMethod.Get,
+            new Uri("http://example.com/resource"),
+            Credentials,
+            additionalParameters: [new OAuthParameter("tag", "hello world")]
+        );
+
+        var querySignedParameter = fromQuery.SignatureBaseString.Split('&', 3)[2];
+        var bodySignedParameter = fromBody.SignatureBaseString.Split('&', 3)[2];
+        querySignedParameter.ShouldBe(bodySignedParameter);
+    }
+
+    [Fact]
     public void Sign_ConcurrentSigningWithSameCredentials_ProducesIndependentResults()
     {
         var signer = new OAuthSigner();

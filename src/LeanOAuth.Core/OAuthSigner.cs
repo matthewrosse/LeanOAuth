@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using LeanOAuth.Core.Credentials;
@@ -218,12 +219,12 @@ public sealed class OAuthSigner
             var separatorIndex = pair.IndexOf('=');
             if (separatorIndex < 0)
             {
-                parameters.Add(new OAuthParameter(Uri.UnescapeDataString(pair), string.Empty));
+                parameters.Add(new OAuthParameter(WebUtility.UrlDecode(pair), string.Empty));
             }
             else
             {
-                var key = Uri.UnescapeDataString(pair[..separatorIndex]);
-                var value = Uri.UnescapeDataString(pair[(separatorIndex + 1)..]);
+                var key = WebUtility.UrlDecode(pair[..separatorIndex]);
+                var value = WebUtility.UrlDecode(pair[(separatorIndex + 1)..]);
                 parameters.Add(new OAuthParameter(key, value));
             }
         }
