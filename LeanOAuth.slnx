@@ -10,6 +10,7 @@
     <Project Path="src/LeanOAuth.Http/LeanOAuth.Http.csproj" />
   </Folder>
   <Folder Name="/test/">
+    <Project Path="test/LeanOAuth.AspNetCore.Tests.Unit/LeanOAuth.AspNetCore.Tests.Unit.csproj" />
     <Project Path="test/LeanOAuth.Core.Tests.Unit/LeanOAuth.Core.Tests.Unit.csproj" />
     <Project Path="test/LeanOAuth.Http.Tests.Unit/LeanOAuth.Http.Tests.Unit.csproj" />
   </Folder>

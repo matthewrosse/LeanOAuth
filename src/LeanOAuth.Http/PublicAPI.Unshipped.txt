@@ -18,6 +18,8 @@ LeanOAuth.Http.OAuthFlowOptions.AllowUnconfirmedCallback.get -> bool
 LeanOAuth.Http.OAuthFlowOptions.AllowUnconfirmedCallback.init -> void
 LeanOAuth.Http.OAuthFlowOptions.Equals(LeanOAuth.Http.OAuthFlowOptions? other) -> bool
 LeanOAuth.Http.OAuthFlowOptions.OAuthFlowOptions() -> void
+LeanOAuth.Http.OAuthFlowOptions.Realm.get -> string?
+LeanOAuth.Http.OAuthFlowOptions.Realm.init -> void
 LeanOAuth.Http.OAuthProtocolException.OAuthProtocolException(string! message, System.Exception! innerException) -> void
 LeanOAuth.Http.OAuthProtocolException.OAuthProtocolException(string! message) -> void
 LeanOAuth.Http.OAuthProviderEndpoints
