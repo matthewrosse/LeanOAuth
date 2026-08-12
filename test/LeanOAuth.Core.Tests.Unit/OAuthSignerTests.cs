@@ -182,6 +182,78 @@ public class OAuthSignerTests
     }
 
     [Fact]
+    public void Sign_OrdersDuplicateKeysFromDifferentSourcesByEncodedValue()
+    {
+        var signer = CreateSigner();
+
+        var result = signer.Sign(
+            HttpMethod.Get,
+            new Uri("http://example.com/resource?oauth_version=zzz-query"),
+            Credentials,
+            additionalParameters: [new OAuthParameter("oauth_version", "aaa-additional")]
+        );
+
+        var decoded = Uri.UnescapeDataString(result.SignatureBaseString.Split('&', 3)[2]);
+        decoded
+            .IndexOf("oauth_version=1.0", StringComparison.Ordinal)
+            .ShouldBeLessThan(decoded.IndexOf("oauth_version=aaa-additional", StringComparison.Ordinal));
+        decoded
+            .IndexOf("oauth_version=aaa-additional", StringComparison.Ordinal)
+            .ShouldBeLessThan(decoded.IndexOf("oauth_version=zzz-query", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void Sign_HandlesEmptyParameterValuesAndKeysWithNoValue()
+    {
+        var signer = CreateSigner();
+
+        var result = signer.Sign(
+            HttpMethod.Get,
+            new Uri("http://example.com/resource?flag&empty="),
+            Credentials
+        );
+
+        result.Parameters.ShouldContain(p => p.Key == "flag" && p.Value == string.Empty);
+        result.Parameters.ShouldContain(p => p.Key == "empty" && p.Value == string.Empty);
+        result.SignatureBaseString.ShouldContain(Uri.EscapeDataString("flag="));
+        result.SignatureBaseString.ShouldContain(Uri.EscapeDataString("empty="));
+    }
+
+    [Fact]
+    public void Sign_EncodesUnicodeParameterKeysAndValuesOverUtf8Bytes()
+    {
+        var signer = CreateSigner();
+
+        var result = signer.Sign(
+            HttpMethod.Get,
+            new Uri("http://example.com/resource"),
+            Credentials,
+            additionalParameters: [new OAuthParameter("café", "日本語")]
+        );
+
+        var decoded = Uri.UnescapeDataString(result.SignatureBaseString.Split('&', 3)[2]);
+        decoded.ShouldContain("caf%C3%A9");
+        decoded.ShouldContain("%E6%97%A5%E6%9C%AC%E8%AA%9E");
+    }
+
+    [Fact]
+    public void Sign_DoesNotDoubleEncodeAlreadyPercentEncodedQueryInput()
+    {
+        var signer = CreateSigner();
+
+        var result = signer.Sign(
+            HttpMethod.Get,
+            new Uri("http://example.com/resource?greeting=hello%20world"),
+            Credentials
+        );
+
+        result.Parameters.ShouldContain(p => p.Key == "greeting" && p.Value == "hello world");
+        var decoded = Uri.UnescapeDataString(result.SignatureBaseString.Split('&', 3)[2]);
+        decoded.ShouldContain("greeting=hello%20world");
+        decoded.ShouldNotContain("hello%2520world");
+    }
+
+    [Fact]
     public void Sign_ConcurrentSigningWithSameCredentials_ProducesIndependentResults()
     {
         var signer = new OAuthSigner();
