@@ -22,7 +22,7 @@ Signing tests are pinned to the worked example in RFC 5849 §1.2 — consumer ke
 
 ## Before committing
 
-Run `dotnet csharpier .`. The repo is CSharpier-formatted and CI does not check formatting.
+Run `dotnet format`. The repo is `dotnet format`-formatted and CI does not check formatting.
 
 ## Commits and PRs
 
