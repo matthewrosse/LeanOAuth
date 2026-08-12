@@ -2,6 +2,7 @@
 // provider-specific value (endpoints, consumer key/secret) comes from configuration, not code.
 // Fill them in with `dotnet user-secrets set OAuth10A:ConsumerKey ...` (see README.md).
 
+using System.Net;
 using System.Security.Claims;
 using LeanOAuth.AspNetCore;
 using LeanOAuth.Core.Credentials;
@@ -68,7 +69,9 @@ app.MapGet(
             return Results.Redirect("/");
         }
 
-        var claims = user.Claims.Select(c => $"{c.Type}: {c.Value}");
+        var claims = user.Claims.Select(c =>
+            $"{WebUtility.HtmlEncode(c.Type)}: {WebUtility.HtmlEncode(c.Value)}"
+        );
         return Results.Content(
             $"""<p>Signed in.</p><pre>{string.Join('\n', claims)}</pre><a href="/signout">Sign out</a>""",
             "text/html"
